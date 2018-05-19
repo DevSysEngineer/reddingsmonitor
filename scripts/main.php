@@ -112,7 +112,9 @@ function triggerDarkMode(active) {
 function initMap() {
     // Setup map
     map = new google.maps.Map(document.getElementById('map'), {
-        styles: []
+        styles: [],
+        center: new google.maps.LatLng(0, 0),
+        zoom: 4
     });
 
     // Setup layer
@@ -130,6 +132,11 @@ function initMap() {
 
         // Set date information
         document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+    });
+
+    // Add event listener for layer
+    google.maps.event.addListener(kmlLayer, 'status_changed', function () {
+        console.log('KML status is', kmlLayer.getStatus());
     });
 }
 
