@@ -147,7 +147,7 @@ function initMap() {
         stop = true;
     });
 
-    / add listener for drag end
+    // add listener for drag end
     google.maps.event.addListener(map, 'dragend', function () {
         center = map.getCenter();
         stop = false;
