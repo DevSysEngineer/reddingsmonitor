@@ -15,6 +15,7 @@ try {
 ?>
 var map = null;
 var center = null
+var zoom = null;
 var stop = false;
 var kmlLayer = null;
 var metadataChanged = null;
@@ -124,6 +125,7 @@ function createKMLLayer() {
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
         // Set center
         map.setCenter(center);
+        map.setZoom(zoom);
 
         // Get current date
         var date = new Date();
@@ -150,6 +152,7 @@ function initMap() {
     // add listener for drag end
     google.maps.event.addListener(map, 'dragend', function () {
         center = map.getCenter();
+        zoom = map.getZoom();
         stop = false;
     });
 
