@@ -20,7 +20,7 @@ try {
 
     /* Check if secret key is invalid */
     $secretKey = $_GET['secretkey'];
-    if (!$config->checkSecretKey($secretkey)) {
+    if (!$config->checkSecretKey($secretKey)) {
         header('HTTP/1.0 405 Method Not Allowed');
         exit;
     }
@@ -37,7 +37,7 @@ try {
     <Document>
         <NetworkLink>
             <Link>
-                <href></href>
+                <href><?= $config->createKMLURL('main'); ?></href>
                 <refreshMode>onInterval</refreshMode>
                 <refreshInterval>10</refreshInterval>
             </Link>
