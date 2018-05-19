@@ -10,16 +10,16 @@ if (empty($config)) {
 
 try {
     /* Set URL */
-    $reddingsmonitor->setURL('http://xxxxx.reddingsmonitor.nl');
+    $config->setURL('http://xxxxx.reddingsmonitor.nl');
 
     /* Set secret key */
-    $reddingsmonitor->setSecretKey('D347rhhn4gedg54dhjsxjh4334b3bn4bn43wxk74bdn777878778d');
+    $config->setSecretKey('D347rhhn4gedg54dhjsxjh4334b3bn4bn43wxk74bdn777878778d');
 
     /* Whitelist IP's */
-    $reddingsmonitor->whitelistIPs([]);
+    $config->whitelistIPs([]);
 
     /* Set Google Maps API */
-    $reddingsmonitor->setGoogleMapsAPIKey('');
+    $config->setGoogleMapsAPIKey('');
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;
