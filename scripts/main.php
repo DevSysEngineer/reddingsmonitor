@@ -144,19 +144,28 @@ function initMap() {
         center: new google.maps.LatLng(0, 0),
     });
 
-    // add listener for drag start
+    // Add listener for center changed
+    google.maps.event.addListener(map, 'center_changed', function() {
+        center = map.getCenter();
+        console.log('Changed center', center);
+    });
+
+    // Add listener for zoom changed
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        zoom = map.getZoom();
+        console.log('Changed zoom', zoom);
+    });
+
+    // Add listener for drag start
     google.maps.event.addListener(map, 'dragstart', function () {
         console.log('Stop createKMLLayer event');
         stop = true;
     });
 
-    // add listener for drag end
+    // Add listener for drag end
     google.maps.event.addListener(map, 'dragend', function () {
-        center = map.getCenter();
-        zoom = map.getZoom();
+        console.log('Start createKMLLayer event');
         stop = false;
-
-        console.log('Start createKMLLayer event', center, zoom);
     });
 
     // Create layer
