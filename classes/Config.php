@@ -17,7 +17,7 @@ class Config {
     public function setKMLLocation(string $location) {
         /* Check if path is not readable */
         if (!is_readable($location)) {
-            throw new Exception('Path is not readable');
+            throw new \Exception('Path is not readable');
         }
 
         /* Set location */
