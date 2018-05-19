@@ -134,7 +134,7 @@ function initMap() {
 }
 
 function initData() {
-    /* Set interval for retrieving data from server */
+    // Set interval for retrieving data from server
     setInterval(function() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -147,6 +147,10 @@ function initData() {
     }, 10000);
 }
 
+// Set function for onload
 window.onload = function() {
     initData();
 };
+
+// Set google event listener
+google.maps.event.addDomListener(window, 'load', initialize);

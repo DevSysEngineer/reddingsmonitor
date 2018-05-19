@@ -56,7 +56,7 @@ try {
             <div id="map"></div>
             <div id="sidebar"></div>
         </div>
-        <script async defer src="<?= $config->createScriptURL($token); ?>"></script>
-        <script async defer src="<?= $config->createGoogleMapsURL(); ?>"></script>
+        <script src="<?= $config->createScriptURL($token); ?>"></script>
+        <script src="<?= $config->createGoogleMapsURL(); ?>"></script>
     </body>
 </html>

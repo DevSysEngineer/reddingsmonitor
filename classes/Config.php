@@ -64,8 +64,8 @@ class Config {
         return $this->_googleMapsAPIKey;
     }
 
-    public function createGoogleMapsURL(string $callback = 'initMap') : string {
-        return 'https://maps.googleapis.com/maps/api/js?key=' .  $this->getGoogleMapsAPIKey() . '&callback=' . $callback;
+    public function createGoogleMapsURL() : string {
+        return 'https://maps.googleapis.com/maps/api/js?key=' .  $this->getGoogleMapsAPIKey();
     }
 
     public function createNetLinkURL(string $id = 'main') : string {
