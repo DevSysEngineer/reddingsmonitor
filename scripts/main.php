@@ -15,7 +15,7 @@ try {
 ?>
 var map = null;
 var center = null
-vat stop = false;
+var stop = false;
 var kmlLayer = null;
 var metadataChanged = null;
 var darkModeStyles = [
