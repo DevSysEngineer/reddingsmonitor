@@ -33,17 +33,14 @@ try {
 }
 ?>
 <?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://www.opengis.net/kml/2.2">
-    <Folder>
-        <name>Network Links</name>
-        <description>Network link example 1</description>
+<kml xmlns="http://earth.google.com/kml/2.0">
+    <Document>
         <NetworkLink>
-            <name>Random Placemark</name>
-            <description>A simple server-side script that generates a new random
-            placemark on each call</description>
             <Link>
                 <href><?= $config->createKMLURL('main'); ?></href>
+                <refreshMode>onInterval</refreshMode>
+                <refreshInterval>10</refreshInterval>
             </Link>
         </NetworkLink>
-    </Folder>
+    </Document>
 </kml>

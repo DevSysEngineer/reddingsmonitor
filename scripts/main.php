@@ -14,6 +14,10 @@ try {
 }
 ?>
 var map = null;
+var center = null
+vat stop = false;
+var kmlLayer = null;
+var metadataChanged = null;
 var darkModeStyles = [
     {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
     {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -109,22 +113,18 @@ function triggerDarkMode(active) {
     }
 }
 
-function initMap() {
-    // Setup map
-    map = new google.maps.Map(document.getElementById('map'), {
-        styles: [],
-        center: new google.maps.LatLng(0, 0),
-        zoom: 4
-    });
-
+function createKMLLayer() {
     // Setup layer
-    var kmlLayer = new google.maps.KmlLayer({
-        url: '<?= $config->createNetLinkURL(); ?>',
+    kmlLayer = new google.maps.KmlLayer({
+        url: '<?= $config->createKMLURL('main'); ?>',
         map: map
     });
 
-    // Add event listener for layer
-    google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
+    // add listener for layer
+    metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
+        // Set center
+        map.setCenter(center);
+
         // Get current date
         var date = new Date();
         var n = date.toDateString();
@@ -133,11 +133,48 @@ function initMap() {
         // Set date information
         document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
     });
+}
 
-    // Add event listener for layer
-    google.maps.event.addListener(kmlLayer, 'status_changed', function () {
-        console.log('KML status is', kmlLayer.getStatus());
+function initMap() {
+    // Setup map
+    map = new google.maps.Map(document.getElementById('map'), {
+        styles: [],
+        center: new google.maps.LatLng(0, 0),
     });
+
+    // add listener for drag start
+    google.maps.event.addListener(map, 'dragstart', function () {
+        stop = true;
+    });
+
+    / add listener for drag end
+    google.maps.event.addListener(map, 'dragend', function () {
+        center = map.getCenter();
+        stop = false;
+    });
+
+    // Create layer
+    createKMLLayer();
+
+    setInterval(function() {
+        // Stop if user is dragging
+        if (stop) {
+            return;
+        }
+
+        // Remove old layer
+        if (kmlLayer) {
+            kmlLayer.setMap(null);
+        }
+
+        // Remove old listener
+        if (metadataChanged) {
+            google.maps.event.removeListener(metadataChanged);
+        }
+
+        // Create new layer
+        createKMLLayer();
+    }, 10000);
 }
 
 function initData() {
