@@ -27,6 +27,9 @@ try {
 
     /* Set header */
     header('Content-Type: application/vnd.google-earth.kml+xml');
+
+    /* Get KML location */
+    echo file_get_contents($config->getKMLLocation());
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;
