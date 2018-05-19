@@ -121,12 +121,12 @@ function createKMLLayer() {
         map: map
     });
 
+    // Set center
+    map.setCenter(center);
+    map.setZoom(zoom);
+
     // add listener for layer
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
-        // Set center
-        map.setCenter(center);
-        map.setZoom(zoom);
-
         // Get current date
         var date = new Date();
         var n = date.toDateString();
