@@ -153,4 +153,4 @@ window.onload = function() {
 };
 
 // Set google event listener
-google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', initMap);
