@@ -142,7 +142,7 @@ function initData() {
                 console.log('data');
             }
         };
-        xhttp.open('GET', '<?= $config->createScriptURL($token, "list"); ?>', true);
+        xhttp.open('GET', '<?= $config->createScriptURL($_GET['token'], "list"); ?>', true);
         xhttp.send();
     }, 10000);
 }

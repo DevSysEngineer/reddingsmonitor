@@ -93,7 +93,7 @@ class Auth {
         $object->lastClientContact = microtime(TRUE);
 
         /* Check if json encode failed */
-        $json = json_encode($auth);
+        $json = json_encode($object);
         if ($json === FALSE) {
             throw new \Exception('Failed to encode object');
         }
