@@ -148,19 +148,19 @@ function initMap() {
         // Check if map lat storage exists
         var latLocalStorage = localStorage.getItem('mapLat');
         if (latLocalStorage !== null) {
-            mapLat = latLocalStorage;
+            mapLat = parseFloat(latLocalStorage);
         }
 
         // Check if map lng storage exists
         var lngLocalStorage = localStorage.getItem('mapLng');
         if (lngLocalStorage !== null) {
-            mapLng = lngLocalStorage;
+            mapLng = parseFloat(lngLocalStorage);
         }
 
         // Check if map zoom storage exists
         var zoomLocalStorage = localStorage.getItem('mapZoom');
         if (zoomLocalStorage !== null) {
-            zoom = zoomLocalStorage;
+            zoom = parseInt(zoomLocalStorage);
         }
     }
 
