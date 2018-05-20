@@ -20,6 +20,7 @@ var stop = false;
 var kmlLayer = null;
 var metadataChanged = null;
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
+var refreshSeconds = (<?= $config->getRefreshSeconds(); ?> * 1000);
 var darkModeStyles = [
     {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
     {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -117,7 +118,8 @@ function triggerDarkMode(active) {
 
 function createKMLLayer() {
     // Create new layer
-    var kmlLayer = new google.maps.KmlLayer('<?= $config->createKMLURL('main'); ?>', {
+    var time = (new Date()).getTime();
+    kmlLayer = new google.maps.KmlLayer('<?= $config->createKMLURL("main"); ?>&time=' + time, {
         preserveViewport: true,
         map: map
     });
@@ -229,7 +231,7 @@ function initMap() {
 
         // Create new layer
         createKMLLayer();
-    }, 10000);
+    }, refreshSeconds);
 }
 
 function initData() {
@@ -243,7 +245,7 @@ function initData() {
         };
         xhttp.open('GET', '<?= $config->createScriptURL($_GET['token'], "list"); ?>', true);
         xhttp.send();
-    }, 10000);
+    }, refreshSeconds);
 }
 
 // Set function for onload

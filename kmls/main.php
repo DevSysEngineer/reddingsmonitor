@@ -25,13 +25,19 @@ try {
         exit;
     }
 
-    /* Set header */
-    header('Content-Type: text/plain');
-
     /* Get KML location */
-    echo file_get_contents($config->getKMLLocation());
+    $content = file_get_contents($config->getKMLLocation());
+
+    /* Set headers */
+    header('Content-Type: application/vnd.google-earth.kml+xml');
+    header('Content-Length: ' . strlen($content));
+    header('Accept-Ranges: bytes');
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $config->getRefreshSeconds()) . ' GMT');
+    header('Cache-Control: max-age=' . $config->getRefreshSeconds());
+
+    /* Show content */
+    echo $content;
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;
 }
-?>

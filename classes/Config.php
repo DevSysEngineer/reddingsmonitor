@@ -9,6 +9,7 @@ class Config {
     protected $_key = NULL;
     protected $_whitelistIPs = [];
     protected $_googleMapsAPIKey = NULL;
+    protected $_refreshSeconds = 30;
 
     public function setURL(string $url) {
         $this->_url = $url;
@@ -48,6 +49,10 @@ class Config {
 
     public function allowIP(string $ip) : bool {
         return in_array($ip, $this->_whitelistIPs);
+    }
+
+    public function getRefreshSeconds() {
+        return $this->_refreshSeconds;
     }
 
     public function setGoogleMapsAPIKey(string $apiKey) {
