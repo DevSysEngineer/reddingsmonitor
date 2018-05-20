@@ -15,10 +15,11 @@ try {
 ?>
 var map = null;
 var center = null
-var zoom = null;
+var zoom = 5;
 var stop = false;
 var kmlLayer = null;
 var metadataChanged = null;
+var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var darkModeStyles = [
     {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
     {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -115,18 +116,18 @@ function triggerDarkMode(active) {
 }
 
 function createKMLLayer() {
-    // Setup layer
-    kmlLayer = new google.maps.KmlLayer({
-        url: '<?= $config->createKMLURL('main'); ?>',
+    // Create new layer
+    var kmlLayer = new google.maps.KmlLayer('<?= $config->createKMLURL('main'); ?>', {
+        preserveViewport: true,
         map: map
     });
 
+    // Force to set center
+    map.setCenter(center);
+    map.setZoom(zoom);
+
     // add listener for layer
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
-        // Set center
-        map.setCenter(center);
-        map.setZoom(zoom);
-
         // Get current date
         var date = new Date();
         var n = date.toDateString();
@@ -138,39 +139,78 @@ function createKMLLayer() {
 }
 
 function initMap() {
+    // Create some default values
+    var mapLat = 0;
+    var mapLng = 0;
+
+    /* Check if user has local storage */
+    if (hasLocalStorage) {
+        // Check if map lat storage exists
+        var latLocalStorage = localStorage.setItem('mapLat');
+        if (latLocalStorage !== null) {
+            mapLat = latLocalStorage;
+        }
+
+        // Check if map lng storage exists
+        var lngLocalStorage = localStorage.setItem('mapLng');
+        if (lngLocalStorage !== null) {
+            mapLng = lngLocalStorage;
+        }
+
+        // Check if map zoom storage exists
+        var zoomLocalStorage = localStorage.setItem('mapZoom');
+        if (zoomLocalStorage !== null) {
+            zoom = zoomLocalStorage;
+        }
+    }
+
+    // Create center object
+    center = new google.maps.LatLng(mapLat, mapLng);
+
     // Setup map
     map = new google.maps.Map(document.getElementById('map'), {
         styles: [],
-        center: new google.maps.LatLng(0, 0),
+        center: center,
+        zoom: zoom
     });
 
     // Add listener for center changed
     google.maps.event.addListener(map, 'center_changed', function() {
+        /* Set map center */
         center = map.getCenter();
-        console.log('Changed center', center);
+
+        /* Check if user has local storage and if possible store data */
+        if (hasLocalStorage) {
+            localStorage.setItem('mapLat', center.lat());
+            localStorage.setItem('mapLng', center.lng());
+        }
     });
 
     // Add listener for zoom changed
     google.maps.event.addListener(map, 'zoom_changed', function() {
+        /* Set map zoom */
         zoom = map.getZoom();
-        console.log('Changed zoom', zoom);
+
+        /* Check if user has local storage and if possible store data */
+        if (hasLocalStorage) {
+            localStorage.setItem('mapZoom', zoom);
+        }
     });
 
     // Add listener for drag start
     google.maps.event.addListener(map, 'dragstart', function () {
-        console.log('Stop createKMLLayer event');
         stop = true;
     });
 
     // Add listener for drag end
     google.maps.event.addListener(map, 'dragend', function () {
-        console.log('Start createKMLLayer event');
         stop = false;
     });
 
     // Create layer
     createKMLLayer();
 
+    // Create interval for creating new layers
     setInterval(function() {
         // Stop if user is dragging
         if (stop) {
