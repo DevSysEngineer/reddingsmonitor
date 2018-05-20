@@ -26,7 +26,7 @@ try {
     }
 
     /* Set header */
-    header('Content-Type: application/vnd.google-earth.kml+xml');
+    header('Content-Type: text/plain');
 
     /* Get KML location */
     echo file_get_contents($config->getKMLLocation());
