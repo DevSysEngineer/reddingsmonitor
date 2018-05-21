@@ -125,7 +125,7 @@ class Auth {
         }
 
         /* Set map data */
-        $object->maps{$id} = $data;
+        $object->maps->{$id} = $data;
 
         /* Update lastClientContact */
         $object->lastClientContact = microtime(TRUE);
