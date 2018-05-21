@@ -119,7 +119,7 @@ function triggerDarkMode(active) {
 function createKMLLayer() {
     // Create new layer
     var time = (new Date()).getTime();
-    kmlLayer = new google.maps.KmlLayer('<?= $config->createKMLURL("main"); ?>&time=' + time, {
+    kmlLayer = new google.maps.KmlLayer('<?= $config->createKMLURL("main", $_GET["token"]); ?>&time=' + time, {
         preserveViewport: true,
         map: map
     });
@@ -142,7 +142,7 @@ function createKMLLayer() {
                 document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
             }
         };
-        xhttp.open('GET', '<?= $config->createScriptURL($_GET['token'], "list"); ?>', true);
+        xhttp.open('GET', '<?= $config->createScriptURL($_GET["token"], "list"); ?>', true);
         xhttp.send();
     });
 }
