@@ -28,6 +28,19 @@ try {
     /* Get KML location */
     $content = file_get_contents($config->getKMLLocation());
 
+    /* Check if token exists in $_GET */
+    if (!empty($_GET['token'])) {
+        /* Check if token is invalid */
+        $token = $_GET['token'];
+        if (!$auth->checkToken($token)) {
+            header('HTTP/1.0 405 Method Not Allowed');
+            exit;
+        }
+
+        /* Store map data */
+        $auth->setMapData($token, 'main', $content);
+    }
+
     /* Set headers */
     header('Content-Type: application/vnd.google-earth.kml+xml');
     header('Content-Length: ' . strlen($content));

@@ -77,8 +77,15 @@ class Config {
         return $this->_url . '/netlinks/' . $id . '.php?secretkey=' . $this->_key;
     }
 
-    public function createKMLURL(string $id = 'main') : string {
-        return $this->_url . '/kmls/' . $id . '.php?secretkey=' . $this->_key;
+    public function createKMLURL(string $id = 'main', string $token = NULL) : string {
+        /* Get URL */
+        $url = $this->_url . '/kmls/' . $id . '.php?secretkey=' . $this->_key;
+        if ($token !== NULL) {
+            $url .= '&token=' . $token;
+        }
+
+        /* Return url */
+        return $url;
     }
 
     public function createScriptURL(string $token, string $id = 'main') : string {

@@ -128,15 +128,22 @@ function createKMLLayer() {
     map.setCenter(center);
     map.setZoom(zoom);
 
-    // add listener for layer
+    // Add listener for layer
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
-        // Get current date
-        var date = new Date();
-        var n = date.toDateString();
-        var time = date.toLocaleTimeString();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // Get current date
+                var date = new Date();
+                var n = date.toDateString();
+                var time = date.toLocaleTimeString();
 
-        // Set date information
-        document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+                // Set date information
+                document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+            }
+        };
+        xhttp.open('GET', '<?= $config->createScriptURL($_GET['token'], "list"); ?>', true);
+        xhttp.send();
     });
 }
 
@@ -233,25 +240,6 @@ function initMap() {
         createKMLLayer();
     }, refreshSeconds);
 }
-
-function initData() {
-    // Set interval for retrieving data from server
-    setInterval(function() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log('data');
-            }
-        };
-        xhttp.open('GET', '<?= $config->createScriptURL($_GET['token'], "list"); ?>', true);
-        xhttp.send();
-    }, refreshSeconds);
-}
-
-// Set function for onload
-window.onload = function() {
-    initData();
-};
 
 // Set google event listener
 google.maps.event.addDomListener(window, 'load', initMap);

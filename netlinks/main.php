@@ -25,7 +25,7 @@ try {
         exit;
     }
 
-
+    /* Create content */
     $content = '<?xml version="1.0" encoding="UTF-8"?>
     <kml xmlns="http://earth.google.com/kml/2.0">
         <Document>

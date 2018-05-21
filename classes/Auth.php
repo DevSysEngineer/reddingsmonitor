@@ -18,6 +18,43 @@ class Auth {
         $this->_path = $fullDir;
     }
 
+    protected function _getTokenObject(string $token) {
+        /* Check if file not exists */
+        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
+        if (!file_exists($fullPath)) {
+            return NULL;
+        }
+
+        /* Get json from file */
+        $json = file_get_contents($fullPath);
+
+        /* Decode token */
+        $object = json_decode($json);
+        if ($object === FALSE) {
+            return NULL;
+        }
+
+        /* Return object */
+        return $object;
+    }
+
+    protected function _writeTokenObject($object) {
+        /* Check if json encode failed */
+        $json = json_encode($object);
+        if ($json === FALSE) {
+            throw new \Exception('Failed to encode object');
+        }
+
+        /* Write file */
+        $result = file_put_contents($fullPath, $json, LOCK_EX);
+        if ($result === FALSE) {
+            throw new \Exception('Failed to write token');
+        }
+
+        /* Success */
+        return TRUE;
+    }
+
     /**
      * Generates a RFC 4211 v4 UUID
      *
@@ -49,6 +86,7 @@ class Auth {
         $auth->creationTime = microtime(TRUE);
         $auth->lastClientContact = microtime(TRUE);
         $auth->ttl = 3600; /* 1 Hour */
+        $auth->maps = [];
 
         /* Check if json encode failed */
         $json = json_encode($auth);
@@ -67,18 +105,9 @@ class Auth {
     }
 
     public function checkToken(string $token) : bool {
-        /* Check if file not exists */
-        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
-        if (!file_exists($fullPath)) {
-            return FALSE;
-        }
-
-        /* Get json from file */
-        $json = file_get_contents($fullPath);
-
-        /* Decode token */
-        $object = json_decode($json);
-        if ($object === FALSE) {
+        /* Check if token exists */
+        $object = $this->_getTokenObject($token);
+        if ($object === NULL) {
             return FALSE;
         }
 
@@ -92,20 +121,25 @@ class Auth {
         /* Update lastClientContact */
         $object->lastClientContact = microtime(TRUE);
 
-        /* Check if json encode failed */
-        $json = json_encode($object);
-        if ($json === FALSE) {
-            throw new \Exception('Failed to encode object');
+        /* Write object */
+        return $this->_writeTokenObject($object);
+    }
+
+    public function setMapData(string $token, string $id, string $data) : bool {
+        /* Check if token exists */
+        $object = $this->_getTokenObject($token);
+        if ($object === NULL) {
+            return FALSE;
         }
 
-        /* Write file */
-        $result = file_put_contents($fullPath, $json, LOCK_EX);
-        if ($result === FALSE) {
-            throw new \Exception('Failed to write token');
-        }
+        /* Set map data */
+        $object->maps[$id] = $data;
 
-        /* Success */
-        return TRUE;
+        /* Update lastClientContact */
+        $object->lastClientContact = microtime(TRUE);
+
+        /* Write object */
+        return $this->_writeTokenObject($object);
     }
 }
 
