@@ -87,7 +87,7 @@ class Auth {
         $auth->creationTime = microtime(TRUE);
         $auth->lastClientContact = microtime(TRUE);
         $auth->ttl = 3600; /* 1 Hour */
-        $auth->maps = [];
+        $auth->maps = new \stdClass;
 
         /* Write object */
         $this->_writeTokenObject($token, $auth);
@@ -125,7 +125,7 @@ class Auth {
         }
 
         /* Set map data */
-        $object->maps[$id] = $data;
+        $object->maps{$id} = $data;
 
         /* Update lastClientContact */
         $object->lastClientContact = microtime(TRUE);
