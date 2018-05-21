@@ -38,7 +38,7 @@ class Auth {
         return $object;
     }
 
-    protected function _writeTokenObject($object) {
+    protected function _writeTokenObject(string $token, $object) {
         /* Check if json encode failed */
         $json = json_encode($object);
         if ($json === FALSE) {
@@ -46,6 +46,7 @@ class Auth {
         }
 
         /* Write file */
+        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
         $result = file_put_contents($fullPath, $json, LOCK_EX);
         if ($result === FALSE) {
             throw new \Exception('Failed to write token');
@@ -88,17 +89,8 @@ class Auth {
         $auth->ttl = 3600; /* 1 Hour */
         $auth->maps = [];
 
-        /* Check if json encode failed */
-        $json = json_encode($auth);
-        if ($json === FALSE) {
-            throw new \Exception('Failed to encode object');
-        }
-
-        /* Write file */
-        $result = file_put_contents($fullPath, $json, LOCK_EX);
-        if ($result === FALSE) {
-            throw new \Exception('Failed to write token');
-        }
+        /* Write object */
+        $this->_writeTokenObject($token, $auth);
 
         /* Return token */
         return $token;
@@ -122,7 +114,7 @@ class Auth {
         $object->lastClientContact = microtime(TRUE);
 
         /* Write object */
-        return $this->_writeTokenObject($object);
+        return $this->_writeTokenObject($token, $object);
     }
 
     public function setMapData(string $token, string $id, string $data) : bool {
@@ -139,7 +131,7 @@ class Auth {
         $object->lastClientContact = microtime(TRUE);
 
         /* Write object */
-        return $this->_writeTokenObject($object);
+        return $this->_writeTokenObject($token, $object);
     }
 }
 
