@@ -59,3 +59,7 @@ html, body {
     border-left: 1px solid #000;
     width: 20%;
 }
+#list li {
+    padding: 10px;
+    border-bottom: 1px solid #000;
+}

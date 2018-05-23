@@ -131,40 +131,47 @@ function createKMLLayer() {
     // Add listener for layer
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
         var xhttp = new XMLHttpRequest();
+        xhttp.overrideMimeType('application/json');
+        xhttp.open('GET', '<?= $config->createScriptURL($_GET["token"], "list"); ?>', true);
         xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200 && this.response !== null) {
-                // Get element by id
+            if (this.readyState == 4 && this.status == 200 && this.responseText !== null) {
+                // Get element by id and remove old childs
                 var listElement = document.getElementById('list');
-
-                // Loop object
-                var length = this.response.payload.length;
-                for (var i = 0; i < length; i++) {
-                    // Get object
-                    var placemarkObject = this.response.payload[i];
-
-                    // Create a new li element
-                    var liElement = document.createElement('li');
-
-                    // Create text node
-                    var newContent = document.createTextNode(placemarkObject.name);
-
-                    // Add the text node to the newly created li
-                    liElement.appendChild(newContent);
-
-                    // Add li element to list element
-                    listElement.appendChild(liElement);
+                while (listElement.firstChild) {
+                    listElement.removeChild(listElement.firstChild);
                 }
 
-                // Get current date
-                var date = new Date();
-                var n = date.toDateString();
-                var time = date.toLocaleTimeString();
+                // Loop object
+                var jsonResponse = JSON.parse(this.responseText);
+                if (jsonResponse !== null) {
+                    var length = jsonResponse.payload.length;
+                    for (var i = 0; i < length; i++) {
+                        // Get object
+                        var placemarkObject = jsonResponse.payload[i];
 
-                // Set date information
-                document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+                        // Create a new li element
+                        var liElement = document.createElement('li');
+
+                        // Create text node
+                        var newContent = document.createTextNode(placemarkObject.name);
+
+                        // Add the text node to the newly created li
+                        liElement.appendChild(newContent);
+
+                        // Add li element to list element
+                        listElement.appendChild(liElement);
+                    }
+
+                    // Get current date
+                    var date = new Date();
+                    var n = date.toDateString();
+                    var time = date.toLocaleTimeString();
+
+                    // Set date information
+                    document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+                }
             }
         };
-        xhttp.open('GET', '<?= $config->createScriptURL($_GET["token"], "list"); ?>', true);
         xhttp.send();
     });
 }
