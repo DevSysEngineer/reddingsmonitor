@@ -21,8 +21,8 @@ try {
     $object->payload = [];
 
     /* Load XML */
-    $doc = new \DOMDocument;
-    $result = $doc->loadXML($mapData);
+    $dom = new \DOMDocument;
+    $result = $dom->loadXML($mapData);
     if ($result === NULL) {
         header('HTTP/1.0 500 Internal Server Error');
         exit;
