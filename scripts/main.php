@@ -132,7 +132,29 @@ function createKMLLayer() {
     metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
+            if (this.readyState == 4 && this.status == 200 && this.response !== null) {
+                // Get element by id
+                var listElement = document.getElementById('list');
+
+                // Loop object
+                var length = this.response.payload.length;
+                for (var i = 0; i < length; i++) {
+                    // Get object
+                    var placemarkObject = this.response.payload[i];
+
+                    // Create a new li element
+                    var liElement = document.createElement('li');
+
+                    // Create text node
+                    var newContent = document.createTextNode(placemarkObject.name);
+
+                    // Add the text node to the newly created li
+                    liElement.appendChild(newContent);
+
+                    // Add li element to list element
+                    listElement.appendChild(liElement);
+                }
+
                 // Get current date
                 var date = new Date();
                 var n = date.toDateString();

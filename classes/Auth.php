@@ -133,6 +133,23 @@ class Auth {
         /* Write object */
         return $this->_writeTokenObject($token, $object);
     }
+
+    public function getMapData(string $token, string $id) {
+        /* Check if token exists */
+        $object = $this->_getTokenObject($token);
+        if ($object === NULL) {
+            return NULL;
+        }
+
+        /* Check if map not exists */
+        $maps = $object->maps;
+        if (empty($maps->{$id})) {
+            return NULL;
+        }
+
+        /* Return map */
+        return $maps->{$id};
+    }
 }
 
 

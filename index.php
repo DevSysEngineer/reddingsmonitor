@@ -54,7 +54,7 @@ try {
         </div>
         <div id="content">
             <div id="map"></div>
-            <div id="sidebar"></div>
+            <div id="sidebar"><ul id="list"></ul></div>
         </div>
         <script src="<?= $config->createGoogleMapsURL(); ?>"></script>
         <script src="<?= $config->createScriptURL($token); ?>"></script>
