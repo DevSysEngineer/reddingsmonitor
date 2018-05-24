@@ -59,7 +59,12 @@ html, body {
     border-left: 1px solid #000;
     width: 20%;
 }
-#list li {
+#list li a {
+    background: #3f3f3f;
     padding: 10px;
     border-bottom: 1px solid #000;
+}
+
+#list li a:hover {
+    background: #333;
 }
