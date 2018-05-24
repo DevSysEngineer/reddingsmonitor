@@ -6,6 +6,7 @@ var kmlLayer = null;
 var metadataChanged = null;
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
+var placemarkObjects = [];
 var darkModeStyles = [
     {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
     {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -101,7 +102,7 @@ function triggerDarkMode(active) {
     }
 }
 
-function createSidebarElement(placemarkObject) {
+function createSidebarElement(index, placemarkObject) {
     // Create title element
     var titleElement = document.createElement('div');
     titleElement.className = 'title';
@@ -120,8 +121,12 @@ function createSidebarElement(placemarkObject) {
 
     // Create a element
     var aElement = document.createElement('a');
+    aElement.className = 'placemark-' + index;
     aElement.appendChild(titleElement);
     aElement.appendChild(descriptionElement);
+    aElement.onclick = function() {
+        console.log(this.className);
+    };
 
     // Create li element
     var liElement = document.createElement('li');
@@ -159,6 +164,9 @@ function createKMLLayer() {
                 // Loop object
                 var jsonResponse = JSON.parse(this.responseText);
                 if (jsonResponse !== null) {
+                    // Set placemark objects
+                    placemarkObjects = jsonResponse.payload;
+
                     // Create sidebar elements
                     var length = jsonResponse.payload.length;
                     for (var i = 0; i < length; i++) {
@@ -166,7 +174,7 @@ function createKMLLayer() {
                         var placemarkObject = jsonResponse.payload[i];
 
                         // Add li element to list element
-                        var liElement = createSidebarElement(placemarkObject);
+                        var liElement = createSidebarElement(i, placemarkObject);
                         listElement.appendChild(liElement);
                     }
 
