@@ -14,8 +14,8 @@ try {
     ];
 
     /* Get javascript location */
-    $content = file_get_contents('../javascript/main.js');
-    $output = str_replace($content, array_keys($replace), array_values($replace));
+    $content = file_get_contents('../javascripts/main.js');
+    $output = str_replace(array_keys($replace), array_values($replace), $content);
 
     /* Set header */
     header('Content-Type: text/javascript');

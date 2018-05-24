@@ -113,10 +113,10 @@ function createSidebarElement(placemarkObject) {
 
     // Create li element
     var liElement = document.createElement('li');
-    li.appendChild(aElement);
+    liElement.appendChild(aElement);
 
     // Return element
-    return li;
+    return liElement;
 }
 
 function createKMLLayer() {

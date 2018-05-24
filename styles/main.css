@@ -11,8 +11,10 @@ html, body {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
-#header {
+#header, #list li a:hover {
     background: #333;
+}
+#header {
     height: 5%;
     width: 100%;
     display: table;
@@ -25,9 +27,11 @@ html, body {
     display: table-cell;
     vertical-align: middle;
 }
+#logo, .title {
+    color: #fefefe;
+}
 #logo {
     font-size: 100%;
-    color: #fefefe;
     padding-left: 10px;
 }
 #logo > span {
@@ -63,8 +67,6 @@ html, body {
     background: #3f3f3f;
     padding: 10px;
     border-bottom: 1px solid #000;
-}
-
-#list li a:hover {
-    background: #333;
+    display: block;
+    font-size: 16px;
 }
