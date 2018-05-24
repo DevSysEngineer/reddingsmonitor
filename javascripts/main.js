@@ -110,13 +110,18 @@ function createSidebarElement(placemarkObject) {
     var titleContent = document.createTextNode(placemarkObject.name);
     titleElement.appendChild(titleContent);
 
+    // Create description element
+    var descriptionElement = document.createElement('div');
+    descriptionElement.className = 'description';
+
     // Create description content
     var descriptionContent = document.createTextNode(placemarkObject.description);
-    titleElement.appendChild(descriptionContent);
+    descriptionElement.appendChild(descriptionContent);
 
     // Create a element
     var aElement = document.createElement('a');
     aElement.appendChild(titleElement);
+    aElement.appendChild(descriptionElement);
 
     // Create li element
     var liElement = document.createElement('li');

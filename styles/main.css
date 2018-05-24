@@ -40,9 +40,11 @@ html, body {
 #lastupdate {
     display: inline-block;
 }
-#lastupdate, #darkmode {
+#lastupdate, #darkmode, .description {
     font-size:  10px;
     color: #bfbfbf;
+}
+#lastupdate, #darkmode {
     text-align: right;
     padding-right: 10px;
 }
