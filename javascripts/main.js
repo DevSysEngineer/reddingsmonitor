@@ -104,8 +104,15 @@ function triggerDarkMode(active) {
 function createSidebarElement(placemarkObject) {
     // Create title element
     var titleElement = document.createElement('div');
+    titleElement.className = 'title';
+
+    // Create title content
     var titleContent = document.createTextNode(placemarkObject.name);
     titleElement.appendChild(titleContent);
+
+    // Create description content
+    var descriptionContent = document.createTextNode(placemarkObject.description);
+    titleElement.appendChild(descriptionContent);
 
     // Create a element
     var aElement = document.createElement('a');
