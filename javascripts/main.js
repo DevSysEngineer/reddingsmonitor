@@ -136,7 +136,7 @@ function createSidebarElement(index, placemarkObject) {
         }
 
         /* Pan to */
-        var centerCoordinate = map.centerCoordinate;
+        var centerCoordinate = placemarkObject.centerCoordinate;
         map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
     };
 
