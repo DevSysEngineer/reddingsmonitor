@@ -58,7 +58,7 @@ class Placemark {
         return NULL;
     }
 
-    public function isValid() {
+    public function isValid() : bool {
         return ($this->_name !== NULL);
     }
 
@@ -77,5 +77,81 @@ class Placemark {
 
         /* Return object */
         return $object;
+    }
+
+    public function toXML($dom) {
+        /* Create placemark element */
+        $placemarkElement = $dom->createElement('Placemark');
+
+        /* Create name element */
+        if ($this->_name !== NULL) {
+            $nameElement = $dom->createElement('name', $this->_name);
+            $placemarkElement->appendChild($nameElement);
+        }
+
+        /* Create description element */
+        $descriptionElement = $dom->createElement('description', $this->_description);
+        $placemarkElement->appendChild($descriptionElement);
+
+        /* Create visibility element */
+        $visibilityElement = $dom->createElement('visibility', '1');
+        $placemarkElement->appendChild($visibilityElement);
+
+        /* Create style element */
+        $styleElement = $dom->createElement('Style');
+
+        /* Create icon style element */
+        $iconStyleElement = $dom->createElement('IconStyle');
+
+        /* Create scale element */
+        $scaleElement = $dom->createElement('scale', '1');
+        $iconStyleElement->appendChild($scaleElement);
+
+        /* Create heading element */
+        $headingElement = $dom->createElement('heading', '0');
+        $iconStyleElement->appendChild($headingElement);
+
+        /* Create icon style element */
+        $iconElement = $dom->createElement('Icon');
+
+        /* Create heading element */
+        $hrefElement = $dom->createElement('href', 'http://maps.google.com/mapfiles/kml/shapes/capital_big.png');
+        $iconElement->appendChild($hrefElement);
+
+        /* Add style element */
+        $iconStyleElement->appendChild($iconElement);
+
+        /* Add style element */
+        $styleElement->appendChild($iconStyleElement);
+
+        /* Add style element */
+        $placemarkElement->appendChild($styleElement);
+
+        /* Create point element */
+        $pointElement = $dom->createElement('Point');
+
+        /* Create extrude element */
+        $extrudeElement = $dom->createElement('extrude', '1');
+        $pointElement->appendChild($extrudeElement);
+
+        /* Create altitudeMode element */
+        $altitudeModeElement = $dom->createElement('altitudeMode', 'absolute');
+        $pointElement->appendChild($altitudeModeElement);
+
+        /* Get coordinates */
+        $coordinates = [];
+        foreach ($this->_coordinates as $coordinate) {
+            $coordinates[] = $coordinate->toText();
+        }
+
+        /* Create coordinates element */
+        $coordinatesElement = $dom->createElement('coordinates', implode(PHP_EOL, $coordinates));
+        $pointElement->appendChild($coordinatesElement);
+
+        /* Add point element */
+        $placemarkElement->appendChild($styleElement);
+
+        /* Return placemark element */
+        return $placemarkElement;
     }
 }

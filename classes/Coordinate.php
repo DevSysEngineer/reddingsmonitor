@@ -38,4 +38,8 @@ class Coordinate {
         /* Return object */
         return $object;
     }
+
+    public function toText() : string {
+        return $this->_lat . ',' . $this->_lng . ',' . $this->_alt;
+    }
 }

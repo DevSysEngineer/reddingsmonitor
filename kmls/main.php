@@ -25,8 +25,30 @@ try {
         exit;
     }
 
-    /* Get KML location */
+    /* Get KML content */
     $content = file_get_contents($config->getKMLLocation());
+
+    /* Load XML */
+    $dom = new \DOMDocument;
+    $result = $dom->loadXML($content);
+    if ($result === NULL) {
+        header('HTTP/1.0 500 Internal Server Error');
+        exit;
+    }
+
+    /* Get placemak objects */
+    $placemarkObjs = [];
+    $placemarkElements = $dom->getElementsByTagName('Placemark');
+    foreach ($placemarkElements as $placemarkElement) {
+        $placemarkObj = new Classes\Placemark($placemarkElement);
+        if ($placemarkObj->isValid()) {
+            $newElement = $placemarkObj->toXML($dom);
+            $placemarkElement->parentNode->replaceChild($newelement, $placemarkElement);
+        }
+    }
+
+    /* Get output from dom */
+    $output = $dom->saveXML();
 
     /* Check if token exists in $_GET */
     if (!empty($_GET['token'])) {
@@ -38,18 +60,18 @@ try {
         }
 
         /* Store map data */
-        $auth->setMapData($token, 'main', $content);
+        $auth->setMapData($token, 'main', $output);
     }
 
     /* Set headers */
     header('Content-Type: application/vnd.google-earth.kml+xml');
-    header('Content-Length: ' . strlen($content));
+    header('Content-Length: ' . strlen($output));
     header('Accept-Ranges: bytes');
     header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $config->getRefreshSeconds()) . ' GMT');
     header('Cache-Control: max-age=' . $config->getRefreshSeconds());
 
-    /* Show content */
-    echo $content;
+    /* Show output */
+    echo $output;
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;
