@@ -46,7 +46,7 @@ try {
         $placemarkObj = new Classes\Placemark($placemarkElement);
         if ($placemarkObj->isValid()) {
             $newElement = $placemarkObj->toXML($dom);
-            $placemarkElement->parentNode->replaceChild($newelement, $placemarkElement);
+            $placemarkElement->parentNode->replaceChild($newElement, $placemarkElement);
         }
     }
 

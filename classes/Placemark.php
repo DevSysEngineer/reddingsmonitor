@@ -149,7 +149,7 @@ class Placemark {
         $pointElement->appendChild($coordinatesElement);
 
         /* Add point element */
-        $placemarkElement->appendChild($styleElement);
+        $placemarkElement->appendChild($pointElement);
 
         /* Return placemark element */
         return $placemarkElement;
