@@ -125,7 +125,15 @@ function createSidebarElement(index, placemarkObject) {
     aElement.appendChild(titleElement);
     aElement.appendChild(descriptionElement);
     aElement.onclick = function() {
-        console.log(this.className);
+        // Get index
+        var className = this.className;
+        var res = className.split('-');
+        var placemarkObject = placemarkObjects[ret[1]];
+
+        // Check if map or placemark object is not valid
+        if (map == null || (typeof(placemarkObject) === 'undefined')) {
+            return;
+        }
     };
 
     // Create li element

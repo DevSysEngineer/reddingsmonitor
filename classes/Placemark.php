@@ -2,10 +2,17 @@
 
 namespace Reddingsmonitor\Classes;
 
+/* Require files */
+require_once 'Coordinate.php';
+
 class Placemark {
 
     protected $_name = NULL;
     protected $_description = '';
+
+    protected $_coordinates = [];
+
+    protected $_centerCoordinate = NULL;
 
     public function __construct($placemarkElement) {
         /* Get name */
@@ -18,6 +25,25 @@ class Placemark {
         $description = $this->_getText($placemarkElement, 'description');
         if ($description !== NULL) {
             $this->_description = $description;
+        }
+
+        /* Get coordinates */
+        $rawCoordinates = $this->_getText($placemarkElement, 'coordinates');
+        if ($rawCoordinates !== NULL) {
+            /* Get coordinate objects */
+            $explCoordinates = explode(PHP_EOL, $rawCoordinates);
+            foreach ($explCoordinates as $explCoordinate) {
+                $this->_coordinates[] = new Coordinate($explCoordinate);
+            }
+
+            /* Get index */
+            $count = count($this->_coordinates);
+            if ($count >= 1) {
+                $index = round(($count / 2), 0, PHP_ROUND_HALF_EVEN);
+                if (!empty($this->_coordinates[$index])) {
+                    $this->_centerCoordinate = $this->_coordinates[$index];
+                }
+            }
         }
     }
 
@@ -41,6 +67,13 @@ class Placemark {
         $object = new \stdClass;
         $object->name = $this->_name;
         $object->description = $this->_description;
+
+        /* Get center coordinate */
+        if ($this->_centerCoordinate !== NULL) {
+            $object->centerCoordinate = $this->_centerCoordinate->toStdClass();
+        } else {
+            $object->centerCoordinate = NULL;
+        }
 
         /* Return object */
         return $object;
