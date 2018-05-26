@@ -5,8 +5,9 @@ namespace Reddingsmonitor\KMLs;
 use Reddingsmonitor\Classes;
 
 try {
-    /* Require load */
+    /* Require some files */
     require_once '../load.php';
+    require_once '../classes/Placemark.php';
 
     /* Check if config variable not exists */
     if (empty($config)) {
