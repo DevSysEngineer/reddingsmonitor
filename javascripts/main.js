@@ -134,6 +134,10 @@ function createSidebarElement(index, placemarkObject) {
         if (map == null || (typeof(placemarkObject) === 'undefined')) {
             return;
         }
+
+        /* Pan to */
+        var centerCoordinate = map.centerCoordinate;
+        map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
     };
 
     // Create li element
