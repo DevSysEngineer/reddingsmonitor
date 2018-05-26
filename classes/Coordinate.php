@@ -31,8 +31,8 @@ class Coordinate {
     public function toStdClass() {
         /* Create object */
         $object = new \stdClass;
-        $object->lat = $this->_lat;
         $object->lng = $this->_lng;
+        $object->lat = $this->_lat;
         $object->alt = $this->_alt;
 
         /* Return object */
@@ -40,6 +40,6 @@ class Coordinate {
     }
 
     public function toText() : string {
-        return $this->_lat . ',' . $this->_lng . ',' . $this->_alt;
+        return $this->_lng . ',' . $this->_lat . ',' . $this->_alt;
     }
 }
