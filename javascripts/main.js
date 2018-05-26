@@ -128,7 +128,7 @@ function createSidebarElement(index, placemarkObject) {
         // Get index
         var className = this.className;
         var res = className.split('-');
-        var placemarkObject = placemarkObjects[ret[1]];
+        var placemarkObject = placemarkObjects[res[1]];
 
         // Check if map or placemark object is not valid
         if (map == null || (typeof(placemarkObject) === 'undefined')) {
