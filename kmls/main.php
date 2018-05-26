@@ -2,6 +2,8 @@
 
 namespace Reddingsmonitor\KMLs;
 
+use Reddingsmonitor\Classes;
+
 try {
     /* Require load */
     require_once '../load.php';
