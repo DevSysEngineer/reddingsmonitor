@@ -168,7 +168,7 @@ function createPlacemarkerMarker(placemarkObject) {
     var centerCoordinate = placemarkObject.centerCoordinate;
 
     // Create marker
-    var marker = new google.maps.Marker({
+    var marker = new google.maps.RichMarker({
         position: new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         map: map,
         draggable: false,
