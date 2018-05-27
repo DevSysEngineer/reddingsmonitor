@@ -87,7 +87,6 @@ class Auth {
         $auth->creationTime = microtime(TRUE);
         $auth->lastClientContact = microtime(TRUE);
         $auth->ttl = 3600; /* 1 Hour */
-        $auth->maps = new \stdClass;
 
         /* Write object */
         $this->_writeTokenObject($token, $auth);
@@ -115,40 +114,6 @@ class Auth {
 
         /* Write object */
         return $this->_writeTokenObject($token, $object);
-    }
-
-    public function setMapData(string $token, string $id, string $data) : bool {
-        /* Check if token exists */
-        $object = $this->_getTokenObject($token);
-        if ($object === NULL) {
-            return FALSE;
-        }
-
-        /* Set map data */
-        $object->maps->{$id} = $data;
-
-        /* Update lastClientContact */
-        $object->lastClientContact = microtime(TRUE);
-
-        /* Write object */
-        return $this->_writeTokenObject($token, $object);
-    }
-
-    public function getMapData(string $token, string $id) {
-        /* Check if token exists */
-        $object = $this->_getTokenObject($token);
-        if ($object === NULL) {
-            return NULL;
-        }
-
-        /* Check if map not exists */
-        $maps = $object->maps;
-        if (empty($maps->{$id})) {
-            return NULL;
-        }
-
-        /* Return map */
-        return $maps->{$id};
     }
 }
 

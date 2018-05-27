@@ -9,7 +9,6 @@ try {
     /* Create replace array */
     $replace = [
         '%refreshSeconds%' => ($config->getRefreshSeconds() * 1000),
-        '%kmlMain%' => $config->createKMLURL('main', $_GET["token"]),
         '%scriptMain%' => $config->createScriptURL($_GET["token"], 'list')
     ];
 

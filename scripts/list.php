@@ -9,12 +9,8 @@ try {
     require_once 'load.php';
     require_once '../classes/Placemark.php';
 
-    /* Get map data */
-    $mapData = $auth->getMapData($_GET['token'], 'main');
-    if ($mapData === NULL) {
-        header("HTTP/1.0 404 Not Found");
-        exit;
-    }
+    /* Get KML content */
+    $content = file_get_contents($config->getKMLLocation());
 
     /* Create object */
     $object = new \stdClass;
@@ -22,7 +18,7 @@ try {
 
     /* Load XML */
     $dom = new \DOMDocument;
-    $result = $dom->loadXML($mapData);
+    $result = $dom->loadXML($content);
     if ($result === NULL) {
         header('HTTP/1.0 500 Internal Server Error');
         exit;
@@ -31,7 +27,7 @@ try {
     /* Get placemaks */
     $placemarkElements = $dom->getElementsByTagName('Placemark');
     foreach ($placemarkElements as $placemarkElement) {
-        $placemarkObj = new Classes\Placemark($config, $placemarkElement);
+        $placemarkObj = new Classes\Placemark($placemarkElement);
         if ($placemarkObj->isValid()) {
             $object->payload[] = $placemarkObj->toStdClass();
         }

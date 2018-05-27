@@ -2,11 +2,10 @@ var map = null;
 var center = null
 var zoom = 5;
 var stop = false;
-var kmlLayer = null;
-var metadataChanged = null;
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var placemarkObjects = [];
+var placemarkMapObjects = [];
 var darkModeStyles = [
     {elementType: 'geometry', stylers: [{color: '#242f3e'}]},
     {elementType: 'labels.text.stroke', stylers: [{color: '#242f3e'}]},
@@ -148,60 +147,70 @@ function createSidebarElement(index, placemarkObject) {
     return liElement;
 }
 
-function createKMLLayer() {
-    // Create new layer
-    var time = (new Date()).getTime();
-    kmlLayer = new google.maps.KmlLayer('%kmlMain%&time=' + time, {
-        preserveViewport: true,
+function createPlacemarkerMarker(placemarkObject) {
+    // Get center coordinate
+    var centerCoordinate = placemarkObject.centerCoordinate;
+
+    // Create marker
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
+        label: placemarkObject.name,
         map: map
     });
 
-    // Force to set center
-    map.setCenter(center);
-    map.setZoom(zoom);
+    // Add marker
+    placemarkMapObjects.push(marker);
+}
 
-    // Add listener for layer
-    metadataChanged = google.maps.event.addListener(kmlLayer, 'metadata_changed', function () {
-        var xhttp = new XMLHttpRequest();
-        xhttp.overrideMimeType('application/json');
-        xhttp.open('GET', '%scriptMain%', true);
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200 && this.responseText !== null) {
+function loadRemoteData() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.overrideMimeType('application/json');
+    xhttp.open('GET', '%scriptMain%', true);
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200 && this.responseText !== null) {
+            // Loop object
+            var jsonResponse = JSON.parse(this.responseText);
+            if (jsonResponse !== null) {
                 // Get element by id and remove old childs
                 var listElement = document.getElementById('list');
                 while (listElement.firstChild) {
                     listElement.removeChild(listElement.firstChild);
                 }
 
-                // Loop object
-                var jsonResponse = JSON.parse(this.responseText);
-                if (jsonResponse !== null) {
-                    // Set placemark objects
-                    placemarkObjects = jsonResponse.payload;
-
-                    // Create sidebar elements
-                    var length = jsonResponse.payload.length;
-                    for (var i = 0; i < length; i++) {
-                        // Get placemarkobject
-                        var placemarkObject = jsonResponse.payload[i];
-
-                        // Add li element to list element
-                        var liElement = createSidebarElement(i, placemarkObject);
-                        listElement.appendChild(liElement);
-                    }
-
-                    // Get current date
-                    var date = new Date();
-                    var n = date.toDateString();
-                    var time = date.toLocaleTimeString();
-
-                    // Set date information
-                    document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+                // Remove old markers
+                for (var i = 0; i < placemarkMapObjects.length; i++) {
+                    placemarkMapObjects[i].setMap(null);
                 }
+
+                // Reset map placemarks and set response payload
+                placemarkMapObjects = [];
+                placemarkObjects = jsonResponse.payload;
+
+                // Create sidebar elements
+                var length = jsonResponse.payload.length;
+                for (var i = 0; i < length; i++) {
+                    // Get placemarkobject
+                    var placemarkObject = jsonResponse.payload[i];
+
+                    // Add li element to list element
+                    var liElement = createSidebarElement(i, placemarkObject);
+                    listElement.appendChild(liElement);
+
+                    // Create placemark
+                    createPlacemarkerMarker(placemarkObject);
+                }
+
+                // Get current date
+                var date = new Date();
+                var n = date.toDateString();
+                var time = date.toLocaleTimeString();
+
+                // Set date information
+                document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
             }
-        };
-        xhttp.send();
-    });
+        }
+    };
+    xhttp.send();
 }
 
 function initMap() {
@@ -209,7 +218,7 @@ function initMap() {
     var mapLat = 0;
     var mapLng = 0;
 
-    /* Check if user has local storage */
+    // Check if user has local storage
     if (hasLocalStorage) {
         // Check if map lat storage exists
         var latLocalStorage = localStorage.getItem('mapLat');
@@ -242,10 +251,10 @@ function initMap() {
 
     // Add listener for center changed
     google.maps.event.addListener(map, 'center_changed', function() {
-        /* Set map center */
+        // Set map center
         center = map.getCenter();
 
-        /* Check if user has local storage and if possible store data */
+        // Check if user has local storage and if possible store data
         if (hasLocalStorage) {
             localStorage.setItem('mapLat', center.lat());
             localStorage.setItem('mapLng', center.lng());
@@ -257,7 +266,7 @@ function initMap() {
         /* Set map zoom */
         zoom = map.getZoom();
 
-        /* Check if user has local storage and if possible store data */
+        // Check if user has local storage and if possible store data
         if (hasLocalStorage) {
             localStorage.setItem('mapZoom', zoom);
         }
@@ -273,28 +282,14 @@ function initMap() {
         stop = false;
     });
 
-    // Create layer
-    createKMLLayer();
+    // Load for first time remote data
+    loadRemoteData();
 
-    // Create interval for creating new layers
+    // Create interval for retrieving new data
     setInterval(function() {
-        // Stop if user is dragging
-        if (stop) {
-            return;
+        if (!stop) {
+            loadRemoteData();
         }
-
-        // Remove old layer
-        if (kmlLayer) {
-            kmlLayer.setMap(null);
-        }
-
-        // Remove old listener
-        if (metadataChanged) {
-            google.maps.event.removeListener(metadataChanged);
-        }
-
-        // Create new layer
-        createKMLLayer();
     }, refreshSeconds);
 }
 

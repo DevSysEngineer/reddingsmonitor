@@ -16,10 +16,7 @@ class Placemark {
 
     protected $_centerCoordinate = NULL;
 
-    public function __construct($config, $placemarkElement) {
-        /* Set config */
-        $this->_config = $config;
-
+    public function __construct($placemarkElement) {
         /* Get name */
         $name = $this->_getText($placemarkElement, 'name');
         if ($name !== NULL) {
@@ -82,82 +79,5 @@ class Placemark {
 
         /* Return object */
         return $object;
-    }
-
-    public function toXML($dom) {
-        /* Create placemark element */
-        $placemarkElement = $dom->createElement('Placemark');
-
-        /* Create name element */
-        if ($this->_name !== NULL) {
-            $nameElement = $dom->createElement('name', $this->_name);
-            $placemarkElement->appendChild($nameElement);
-        }
-
-        /* Create description element */
-        $descriptionElement = $dom->createElement('description', $this->_description);
-        $placemarkElement->appendChild($descriptionElement);
-
-        /* Create visibility element */
-        $visibilityElement = $dom->createElement('visibility', '1');
-        $placemarkElement->appendChild($visibilityElement);
-
-        /* Create style element */
-        $styleElement = $dom->createElement('Style');
-
-        /* Create icon style element */
-        $iconStyleElement = $dom->createElement('IconStyle');
-
-        /* Create scale element */
-        $scaleElement = $dom->createElement('scale', (string)FALSE);
-        $iconStyleElement->appendChild($scaleElement);
-
-        /* Create heading element */
-        $headingElement = $dom->createElement('heading', '0');
-        $iconStyleElement->appendChild($headingElement);
-
-        /* Create icon style element */
-        $iconElement = $dom->createElement('Icon');
-
-        /* Create heading element */
-        $href = $this->_config->createImage($this->_name);
-        $hrefElement = $dom->createElement('href', $href);
-        $iconElement->appendChild($hrefElement);
-
-        /* Add style element */
-        $iconStyleElement->appendChild($iconElement);
-
-        /* Add style element */
-        $styleElement->appendChild($iconStyleElement);
-
-        /* Add style element */
-        $placemarkElement->appendChild($styleElement);
-
-        /* Create point element */
-        $pointElement = $dom->createElement('Point');
-
-        /* Create extrude element */
-        $extrudeElement = $dom->createElement('extrude', '1');
-        $pointElement->appendChild($extrudeElement);
-
-        /* Create altitudeMode element */
-        $altitudeModeElement = $dom->createElement('altitudeMode', 'absolute');
-        $pointElement->appendChild($altitudeModeElement);
-
-        /* Get coordinates */
-        $coordinates = [];
-        foreach ($this->_coordinates as $coordinate) {
-            $coordinates[] = $coordinate->toText();
-        }
-
-        /* Create coordinates element */
-        $coordinatesElement = $dom->createElement('coordinates', implode(PHP_EOL, $coordinates));
-        $pointElement->appendChild($coordinatesElement);
-
-        /* Add point element */
-        $placemarkElement->appendChild($pointElement);
-
-        /* Return placemark element */
-        return $placemarkElement;
     }
 }
