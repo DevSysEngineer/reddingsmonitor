@@ -235,6 +235,9 @@ function createPlacemarkerMarker(placemarkObject) {
         placemarkObject.name
     );
 
+    // Add to map
+    popup.setMap(map);
+
     // Add marker
     placemarkMapObjects.push(marker);
 }
