@@ -101,6 +101,16 @@ function triggerDarkMode(active) {
     }
 }
 
+function removePlacemakers() {
+    // Remove placemakers
+    for (var i = 0; i < placemarkMapObjects.length; i++) {
+        placemarkMapObjects[i].setMap(null);
+    }
+
+    // Clear data
+    placemarkMapObjects = [];
+}
+
 function createSidebarElement(index, placemarkObject) {
     // Create title element
     var titleElement = document.createElement('div');
@@ -134,9 +144,18 @@ function createSidebarElement(index, placemarkObject) {
             return;
         }
 
+        // Remove place makers
+        removePlacemakers();
+
         /* Pan to */
         var centerCoordinate = placemarkObject.centerCoordinate;
         map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+
+        // Create place makers
+        for (var i = 0; i < placemarkObjects.length; i++) {
+            var placemarkObject = placemarkObjects[i];
+            createPlacemarkerMarker(placemarkObject);
+        }
     };
 
     // Create li element
@@ -178,13 +197,10 @@ function loadRemoteData() {
                     listElement.removeChild(listElement.firstChild);
                 }
 
-                // Remove old markers
-                for (var i = 0; i < placemarkMapObjects.length; i++) {
-                    placemarkMapObjects[i].setMap(null);
-                }
+                // Remove place makers
+                removePlacemakers();
 
-                // Reset map placemarks and set response payload
-                placemarkMapObjects = [];
+                // Set response payload
                 placemarkObjects = jsonResponse.payload;
 
                 // Create sidebar elements
