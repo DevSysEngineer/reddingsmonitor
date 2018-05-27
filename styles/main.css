@@ -14,16 +14,16 @@ html, body {
 #header, #list li a:hover {
     background: #333;
 }
-.richmarker-wrapper p {
+.placemark p {
     background: #fefefe;
 }
 #logo, .title {
     color: #fefefe;
 }
-.richmarker-wrapper p {
+.placemark p {
     color: #333;
 }
-.richmarker-wrapper p {
+.placemark p {
     border: 1px solid #333;
 }
 #header {
@@ -89,7 +89,7 @@ html, body {
 #list li a, #list li  a * {
     cursor: pointer;
 }
-.richmarker-wrapper p {
+.placemark p {
     margin: 0;
     padding: 5px;
     font-size: 12px;
