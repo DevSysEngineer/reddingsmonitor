@@ -58,5 +58,6 @@ try {
         </div>
         <script src="<?= $config->createGoogleMapsURL(); ?>"></script>
         <script src="<?= $config->createScriptURL($token); ?>"></script>
+        <script src="https://rawgit.com/googlemaps/v3-utility-library/master/richmarker/src/richmarker-compiled.js"></script>
     </body>
 </html>
