@@ -230,7 +230,7 @@ function createPlacemarkerMarker(placemarkObject) {
     var centerCoordinate = placemarkObject.centerCoordinate;
 
     // Create marker
-    var marker = new Popup(
+    var popup = new Popup(
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name
     );
@@ -239,7 +239,7 @@ function createPlacemarkerMarker(placemarkObject) {
     popup.setMap(map);
 
     // Add marker
-    placemarkMapObjects.push(marker);
+    placemarkMapObjects.push(popup);
 }
 
 function loadRemoteData() {
