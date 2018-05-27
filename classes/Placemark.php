@@ -7,6 +7,8 @@ require_once 'Coordinate.php';
 
 class Placemark {
 
+    protected $_config = NULL;
+
     protected $_name = NULL;
     protected $_description = '';
 
@@ -14,7 +16,10 @@ class Placemark {
 
     protected $_centerCoordinate = NULL;
 
-    public function __construct($placemarkElement) {
+    public function __construct($config, $placemarkElement) {
+        /* Set config */
+        $this->_config = $config;
+
         /* Get name */
         $name = $this->_getText($placemarkElement, 'name');
         if ($name !== NULL) {
@@ -115,7 +120,8 @@ class Placemark {
         $iconElement = $dom->createElement('Icon');
 
         /* Create heading element */
-        $hrefElement = $dom->createElement('href', 'http://maps.google.com/mapfiles/kml/shapes/capital_big.png');
+        $href = $this->_config->createImage($this->_name);
+        $hrefElement = $dom->createElement('href', $href);
         $iconElement->appendChild($hrefElement);
 
         /* Add style element */

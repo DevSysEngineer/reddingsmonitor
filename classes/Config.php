@@ -91,6 +91,10 @@ class Config {
     public function createScriptURL(string $token, string $id = 'main') : string {
         return $this->_url . '/scripts/' . $id . '.php?secretkey=' . $this->_key . '&token=' . $token;
     }
+
+    public function createImage(string $text) {
+        return $this->_url . '/scripts/image.php?text=' . urlencode($text);
+    }
 }
 
 $config = new Config;

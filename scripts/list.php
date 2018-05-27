@@ -31,7 +31,7 @@ try {
     /* Get placemaks */
     $placemarkElements = $dom->getElementsByTagName('Placemark');
     foreach ($placemarkElements as $placemarkElement) {
-        $placemarkObj = new Classes\Placemark($placemarkElement);
+        $placemarkObj = new Classes\Placemark($config, $placemarkElement);
         if ($placemarkObj->isValid()) {
             $object->payload[] = $placemarkObj->toStdClass();
         }

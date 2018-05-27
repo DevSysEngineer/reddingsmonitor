@@ -43,7 +43,7 @@ try {
     $placemarkObjs = [];
     $placemarkElements = $dom->getElementsByTagName('Placemark');
     foreach ($placemarkElements as $placemarkElement) {
-        $placemarkObj = new Classes\Placemark($placemarkElement);
+        $placemarkObj = new Classes\Placemark($config, $placemarkElement);
         if ($placemarkObj->isValid()) {
             $newElement = $placemarkObj->toXML($dom);
             $placemarkElement->parentNode->replaceChild($newElement, $placemarkElement);
