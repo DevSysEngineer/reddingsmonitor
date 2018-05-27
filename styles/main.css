@@ -14,17 +14,8 @@ html, body {
 #header, #list li a:hover {
     background: #333;
 }
-.placemark p {
-    background: #fefefe;
-}
 #logo, .title {
     color: #fefefe;
-}
-.placemark p {
-    color: #333;
-}
-.placemark p {
-    border: 1px solid #333;
 }
 #header {
     height: 5%;
@@ -89,8 +80,39 @@ html, body {
 #list li a, #list li  a * {
     cursor: pointer;
 }
-.placemark p {
-    margin: 0;
+.popup-tip-anchor {
+    height: 0;
+    position: absolute;
+    width: 200px;
+}
+.popup-bubble-anchor {
+    position: absolute;
+    width: 100%;
+    bottom: 8px;
+    left: 0;
+}
+.popup-bubble-anchor::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, 0);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid white;
+}
+.popup-bubble-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -100%);
+    background-color: white;
     padding: 5px;
-    font-size: 12px;
+    border-radius: 5px;
+    font-family: sans-serif;
+    overflow-y: auto;
+    max-height: 60px;
+    box-shadow: 0px 2px 10px 1px rgba(0,0,0,0.5);
 }

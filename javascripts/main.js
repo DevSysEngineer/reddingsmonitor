@@ -2,6 +2,7 @@ var map = null;
 var center = null
 var zoom = 5;
 var stop = false;
+var Popup;
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var placemarkObjects = [];
@@ -87,6 +88,67 @@ var darkModeStyles = [
     }
 ];
 
+function definePopupClass() {
+    Popup = function(position, title) {
+        this.position = position;
+
+        // Create content element
+        var contentElement = document.createElement('div');
+        contentElement.className = 'popup-bubble-content';
+
+        // Create title content
+        var titleContent = document.createTextNode(title);
+        contentElement.appendChild(titleContent);
+
+        var pixelOffset = document.createElement('div');
+        pixelOffset.classList.add('popup-bubble-anchor');
+        pixelOffset.appendChild(contentElement);
+
+        this.anchor = document.createElement('div');
+        this.anchor.classList.add('popup-tip-anchor');
+        this.anchor.appendChild(pixelOffset);
+
+        this.stopEventPropagation();
+    };
+
+    Popup.prototype = Object.create(google.maps.OverlayView.prototype);
+
+    Popup.prototype.onAdd = function() {
+        this.getPanes().floatPane.appendChild(this.anchor);
+    };
+
+    Popup.prototype.onRemove = function() {
+        if (this.anchor.parentElement) {
+            this.anchor.parentElement.removeChild(this.anchor);
+        }
+    };
+
+    Popup.prototype.draw = function() {
+        var divPosition = this.getProjection().fromLatLngToDivPixel(this.position);
+        var display = Math.abs(divPosition.x) < 4000 && Math.abs(divPosition.y) < 4000 ? 'block' : 'none';
+
+        if (display === 'block') {
+            this.anchor.style.left = divPosition.x + 'px';
+            this.anchor.style.top = divPosition.y + 'px';
+        }
+        if (this.anchor.style.display !== display) {
+            this.anchor.style.display = display;
+        }
+    };
+
+    Popup.prototype.stopEventPropagation = function() {
+        var anchor = this.anchor;
+        anchor.style.cursor = 'auto';
+
+        ['click', 'dblclick', 'contextmenu', 'wheel', 'mousedown', 'touchstart',
+        'pointerdown'].forEach(function(event) {
+            anchor.addEventListener(event, function(e) {
+                e.stopPropagation();
+            });
+        });
+    };
+}
+
 function triggerDarkMode(active) {
     if (map !== null) {
         /* Set style */
@@ -168,13 +230,10 @@ function createPlacemarkerMarker(placemarkObject) {
     var centerCoordinate = placemarkObject.centerCoordinate;
 
     // Create marker
-    var marker = new RichMarker({
-        position: new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
-        map: map,
-        draggable: false,
-        content: '<div class="placemark"><p>'+placemarkObject.name+'</p></div>',
-        shadow: 0
-    });
+    var marker = new Popup(
+        new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
+        placemarkObject.name
+    );
 
     // Add marker
     placemarkMapObjects.push(marker);
@@ -229,6 +288,9 @@ function loadRemoteData() {
 }
 
 function initMap() {
+    // Define Popup class
+    definePopupClass();
+
     // Create some default values
     var mapLat = 0;
     var mapLng = 0;
