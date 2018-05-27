@@ -109,7 +109,7 @@ class Placemark {
         $iconStyleElement = $dom->createElement('IconStyle');
 
         /* Create scale element */
-        $scaleElement = $dom->createElement('scale', '1');
+        $scaleElement = $dom->createElement('scale', (string)FALSE);
         $iconStyleElement->appendChild($scaleElement);
 
         /* Create heading element */

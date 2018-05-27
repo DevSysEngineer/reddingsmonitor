@@ -10,12 +10,16 @@ if (empty($_GET) || empty($_GET['text'])) {
 }
 
 /* Get some information */
-$length = strlen($_GET['text']);
 $fontSize = 10;
-$xAs = (($fontSize / 2) + 2);
-$width = ($xAs * $length);
-$height = 25;
+$fontWidth = 7;
 $fontPath = '/usr/share/fonts/truetype/freefont/FreeSans.ttf';
+
+/* Calculate some data */
+$length = strlen($_GET['text']);
+$textWidth = ($fontWidth * $length);
+$width = ($textWidth + ($fontSize * 2));
+$xAs = ($width - $textWidth) / 2;
+$height = 25;
 
 /* Create image */
 $image = @imagecreate($width, $height);
