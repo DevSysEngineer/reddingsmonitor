@@ -155,6 +155,7 @@ function createPlacemarkerMarker(placemarkObject) {
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         label: placemarkObject.name,
+        draggable: false,
         map: map
     });
 
