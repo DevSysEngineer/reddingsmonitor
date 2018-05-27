@@ -88,16 +88,13 @@ var darkModeStyles = [
 ];
 
 function triggerDarkMode(active) {
-    /* Map is not init */
-    if (map === null) {
-        return;
-    }
-
-    /* Set style */
-    if (active) {
-        map.setOptions({styles: darkModeStyles});
-    } else {
-        map.setOptions({styles: []});
+    if (map !== null) {
+        /* Set style */
+        if (active) {
+            map.setOptions({styles: darkModeStyles});
+        } else {
+            map.setOptions({styles: []});
+        }
     }
 }
 
@@ -173,9 +170,10 @@ function createPlacemarkerMarker(placemarkObject) {
     // Create marker
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
-        label: placemarkObject.name,
+        map: map,
         draggable: false,
-        map: map
+        content: '<div class="placemark"><p>'+placemarkObject.name+'</p></div>',
+        shadow: 0
     });
 
     // Add marker
