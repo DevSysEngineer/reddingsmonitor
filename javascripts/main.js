@@ -96,7 +96,7 @@ function definePopupClass() {
 
         // Create content element
         var contentElement = document.createElement('div');
-        contentElement.className = 'popup-bubble-content' + extraClassname;
+        contentElement.className = 'popup-bubble-content ' + extraClassname;
 
         // Create title content
         var titleContent = document.createTextNode(title);
@@ -104,12 +104,12 @@ function definePopupClass() {
 
         // Create pixel offset element
         var pixelOffset = document.createElement('div');
-        pixelOffset.className = 'popup-bubble-anchor' + extraClassname;
+        pixelOffset.className = 'popup-bubble-anchor ' + extraClassname;
         pixelOffset.appendChild(contentElement);
 
         // Create anchor element
         this.anchor = document.createElement('div');
-        this.anchor.className = 'popup-tip-anchor' + extraClassname;
+        this.anchor.className = 'popup-tip-anchor ' + extraClassname;
         this.anchor.appendChild(pixelOffset);
 
         // Stop events
