@@ -36,9 +36,15 @@ try {
     /* Encode object */
     $content = json_encode($object);
 
+    /* Create timestamp */
+    $timestamp = gmdate('D, d M Y H:i:s', time() + $config->getRefreshSeconds()) . ' GMT';
+
     /* Set headers */
     header('Content-Type: application/json');
     header('Content-Length: ' . strlen($content));
+    header('Expires: ' . $timestamp);
+    header('Pragma: cache');
+    header('Cache-Control: max-age=' . $config->getRefreshSeconds());
 
     /* Show content */
     echo $content;

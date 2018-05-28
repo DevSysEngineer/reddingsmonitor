@@ -2,7 +2,8 @@ var map = null;
 var center = null
 var zoom = 5;
 var stop = false;
-var Popup;
+var Popup = null;
+var popupClassName = 'default';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var placemarkObjects = [];
@@ -89,25 +90,29 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(position, title) {
+    Popup = function(position, title, extraClassname = 'default') {
+        // Set position
         this.position = position;
 
         // Create content element
         var contentElement = document.createElement('div');
-        contentElement.className = 'popup-bubble-content';
+        contentElement.className = 'popup-bubble-content' + extraClassname;
 
         // Create title content
         var titleContent = document.createTextNode(title);
         contentElement.appendChild(titleContent);
 
+        // Create pixel offset element
         var pixelOffset = document.createElement('div');
-        pixelOffset.className = 'popup-bubble-anchor';
+        pixelOffset.className = 'popup-bubble-anchor' + extraClassname;
         pixelOffset.appendChild(contentElement);
 
+        // Create anchor element
         this.anchor = document.createElement('div');
-        this.anchor.className = 'popup-tip-anchor';
+        this.anchor.className = 'popup-tip-anchor' + extraClassname;
         this.anchor.appendChild(pixelOffset);
 
+        // Stop events
         this.stopEventPropagation();
     };
 
@@ -131,6 +136,7 @@ function definePopupClass() {
             this.anchor.style.left = divPosition.x + 'px';
             this.anchor.style.top = divPosition.y + 'px';
         }
+
         if (this.anchor.style.display !== display) {
             this.anchor.style.display = display;
         }
@@ -151,16 +157,29 @@ function definePopupClass() {
 
 function triggerDarkMode(active) {
     if (map !== null) {
-        /* Set style */
+        // Remove placemakers
+        removePlacemarkers();
+
+        // Set some default values
+        var styles = [];
+
+        // Check if dark mode is active
         if (active) {
-            map.setOptions({styles: darkModeStyles});
+            popupClassName = 'darkmode';
+            styles = darkModeStyles;
         } else {
-            map.setOptions({styles: []});
+            popupClassName = 'default';
         }
+
+        // Set options
+        map.setOptions({styles: styles});
+
+        // Create placemarkers
+        rebuildPlacemarkers();
     }
 }
 
-function removePlacemakers() {
+function removePlacemarkers() {
     // Remove placemakers
     for (var i = 0; i < placemarkMapObjects.length; i++) {
         placemarkMapObjects[i].setMap(null);
@@ -168,6 +187,13 @@ function removePlacemakers() {
 
     // Clear data
     placemarkMapObjects = [];
+}
+
+function rebuildPlacemarkers() {
+    for (var i = 0; i < placemarkObjects.length; i++) {
+        var placemarkObject = placemarkObjects[i];
+        createPlacemarkerMarker(placemarkObject);
+    }
 }
 
 function createSidebarElement(index, placemarkObject) {
@@ -204,17 +230,14 @@ function createSidebarElement(index, placemarkObject) {
         }
 
         // Remove place makers
-        removePlacemakers();
+        removePlacemarkers();
 
-        /* Pan to */
+        // Pan to
         var centerCoordinate = placemarkObject.centerCoordinate;
         map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
-        // Create place makers
-        for (var i = 0; i < placemarkObjects.length; i++) {
-            var placemarkObject = placemarkObjects[i];
-            createPlacemarkerMarker(placemarkObject);
-        }
+        // Create placemarkers
+        rebuildPlacemarkers();
     };
 
     // Create li element
@@ -232,7 +255,8 @@ function createPlacemarkerMarker(placemarkObject) {
     // Create marker
     var popup = new Popup(
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
-        placemarkObject.name
+        placemarkObject.name,
+        popupClassName
     );
 
     // Add to map
@@ -258,7 +282,7 @@ function loadRemoteData() {
                 }
 
                 // Remove place makers
-                removePlacemakers();
+                removePlacemarkers();
 
                 // Set response payload
                 placemarkObjects = jsonResponse.payload;

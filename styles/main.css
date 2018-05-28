@@ -11,13 +11,13 @@ html, body {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
-#header, #list li a:hover, .popup-bubble-content {
+#header, #list li a:hover, .popup-bubble-content.default {
     background: #333;
 }
-#logo, .title, .popup-bubble-content {
+#logo, .title, .popup-bubble-content.default {
     color: #fefefe;
 }
-.popup-bubble-content {
+.popup-bubble-content.default {
     border: 1px solid #000;
 }
 #header {
