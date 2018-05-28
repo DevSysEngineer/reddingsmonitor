@@ -20,6 +20,21 @@ html, body {
 .popup-bubble-content.default {
     border: 1px solid #000;
 }
+.popup-bubble-anchor.default::after {
+    border-top: 8px solid #000;
+}
+.popup-bubble-content.darkmode {
+    background: #fefefe;
+}
+.popup-bubble-content.darkmode {
+    color: #333;
+}
+.popup-bubble-content.darkmode {
+    border: 1px solid #fff;
+}
+.popup-bubble-anchor.darkmode::after {
+    border-top: 8px solid #fff;
+}
 #header {
     height: 5%;
     width: 100%;
@@ -105,7 +120,6 @@ html, body {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 8px solid #000;
 }
 .popup-bubble-content {
     top: 0;
