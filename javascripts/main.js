@@ -298,7 +298,9 @@ function loadRemoteData() {
     xhttp.overrideMimeType('application/json');
     xhttp.open('GET', '%scriptMain%', true);
     xhttp.onreadystatechange = function() {
+        // Check if request is done
         if (this.readyState == 4) {
+            // Check if the response status is good
             if (this.status == 200 && this.responseText !== null) {
                 // Loop object
                 var jsonResponse = JSON.parse(this.responseText);
