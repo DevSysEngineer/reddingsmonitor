@@ -3,7 +3,8 @@ var center = null
 var zoom = 5;
 var stop = false;
 var Popup = null;
-var popupClassName = 'default';
+var popupClassName = null;
+var mapTypeId = 'roadmap';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
@@ -156,6 +157,14 @@ function definePopupClass() {
     };
 }
 
+function getMapClassName() {
+    if (mapTypeId === 'roadmap') {
+        return 'default';
+    } else {
+        return 'darkmode';
+    }
+}
+
 function triggerDarkMode(active) {
     if (map !== null) {
         // Remove placemakers
@@ -169,7 +178,7 @@ function triggerDarkMode(active) {
             popupClassName = 'darkmode';
             styles = darkModeStyles;
         } else {
-            popupClassName = 'default';
+            popupClassName = getMapClassName();
         }
 
         // Set options
@@ -381,16 +390,35 @@ function initMap() {
         if (zoomLocalStorage !== null) {
             zoom = parseInt(zoomLocalStorage);
         }
+
+        // Check if map type id storage exists
+        var mapTypeIdLocalStorage = localStorage.getItem('mapTypeId');
+        if (mapTypeIdLocalStorage !== null) {
+            mapTypeId = mapTypeIdLocalStorage;
+        }
     }
 
-    // Create center object
+    // Set some values
     center = new google.maps.LatLng(mapLat, mapLng);
+    popupClassName = getMapClassName();
 
     // Setup map
     map = new google.maps.Map(document.getElementById('map'), {
         styles: [],
         center: center,
-        zoom: zoom
+        zoom: zoom,
+        mapTypeId: mapTypeId
+    });
+
+    // Add listener for map type id changed
+    google.maps.event.addListener(map, 'maptypeid_changed', function() {
+        // Set map type id
+        mapTypeId = map.getMapTypeId();
+
+        // Check if user has local storage and if possible store data
+        if (hasLocalStorage) {
+            localStorage.setItem('mapTypeId', mapTypeId);
+        }
     });
 
     // Add listener for center changed
