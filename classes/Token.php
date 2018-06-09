@@ -4,6 +4,7 @@ namespace Reddingsmonitor\Classes;
 
 class Token {
 
+    protected $_uuid = NULL;
     protected $_path = NULL;
     protected $_valid = FALSE;
     protected $_object = NULL;
