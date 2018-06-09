@@ -5,6 +5,7 @@ var stop = false;
 var Popup = null;
 var popupClassName = 'default';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
+var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var placemarkObjects = [];
 var placemarkMapObjects = [];
@@ -266,6 +267,29 @@ function createPlacemarkerMarker(placemarkObject) {
     placemarkMapObjects.push(popup);
 }
 
+function updateLayout() {
+    // Create sidebar elements
+    for (var i = 0; i < placemarkMapObjects.length; i++) {
+        // Get placemarkobject
+        var placemarkObject = placemarkMapObjects[i];
+
+        // Add li element to list element
+        var liElement = createSidebarElement(i, placemarkObject);
+        listElement.appendChild(liElement);
+
+        // Create placemark
+        createPlacemarkerMarker(placemarkObject);
+    }
+
+    // Get current date
+    var date = new Date();
+    var n = date.toDateString();
+    var time = date.toLocaleTimeString();
+
+    // Set date information
+    document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+}
+
 function loadRemoteData() {
     var xhttp = new XMLHttpRequest();
     xhttp.overrideMimeType('application/json');
@@ -287,27 +311,33 @@ function loadRemoteData() {
                 // Set response payload
                 placemarkObjects = jsonResponse.payload;
 
-                // Create sidebar elements
-                var length = jsonResponse.payload.length;
-                for (var i = 0; i < length; i++) {
-                    // Get placemarkobject
-                    var placemarkObject = jsonResponse.payload[i];
+                // Try to get GPS location of current device
+                if (hasGPSLocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        // Create placemark
+                        var gpsPlacemark = {
+                            name: 'My location',
+                            description: '',
+                            centerCoordinate: {
+                                lng: position.coords.longitude,
+                                lat: position.coords.latitude,
+                                alt: 0
+                            }
+                        };
 
-                    // Add li element to list element
-                    var liElement = createSidebarElement(i, placemarkObject);
-                    listElement.appendChild(liElement);
+                        // Add GPS placemark
+                        placemarkObjects.push(gpsPlacemark);
 
-                    // Create placemark
-                    createPlacemarkerMarker(placemarkObject);
+                        // Update layout with GPS location
+                        updateLayout();
+                    }, function() {
+                        // Error by retrieving GPS location
+                        updateLayout();
+                    });
+                } else {]
+                    // No GPS location
+                    updateLayout();
                 }
-
-                // Get current date
-                var date = new Date();
-                var n = date.toDateString();
-                var time = date.toLocaleTimeString();
-
-                // Set date information
-                document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
             }
         }
     };
