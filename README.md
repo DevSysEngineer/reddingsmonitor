@@ -20,3 +20,9 @@ pm.max_spare_servers = 20
 pm.process_idle_timeout = 10s
 pm.max_requests = 0
 ```
+
+
+## Composer install
+```
+sudo php /home/reddingsmonitor/composer.phar install --no-plugins --no-scripts
+```

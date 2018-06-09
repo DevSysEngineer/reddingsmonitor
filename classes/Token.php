@@ -9,15 +9,17 @@ class Token {
     protected $_object = NULL;
 
     public function __construct(string $path, string $token) {
-        /* Check if file not exists */
+        /* Set path */
         $fullPath = $path . DIRECTORY_SEPARATOR . $token . '.json';
+        $this->_path = $fullPath;
+
+        /* Check if file not exists */
         if (!file_exists($fullPath)) {
             $this->_object = $this->_createObject();
             return;
         }
 
         /* Get json from file */
-        $this->_path = $fullPath;
         $json = file_get_contents($fullPath);
 
         /* Decode token */
