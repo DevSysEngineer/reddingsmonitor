@@ -290,7 +290,7 @@ function updateLayout(listElement) {
     document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
 
     // Ready
-    stop = true;
+    stop = false;
 }
 
 function loadRemoteData() {
