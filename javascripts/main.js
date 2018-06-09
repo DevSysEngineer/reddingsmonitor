@@ -3,7 +3,7 @@ var center = null
 var zoom = 5;
 var stop = false;
 var Popup = null;
-var popupClassName = null;
+var darkMode = false;
 var mapTypeId = 'roadmap';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
@@ -157,11 +157,23 @@ function definePopupClass() {
     };
 }
 
-function getMapClassName() {
-    if (mapTypeId === 'roadmap') {
-        return 'default';
+function getMapStyles() {
+    if (darkMode) {
+        return darkModeStyles;
     } else {
-        return 'darkmode';
+        return [];
+    }
+}
+
+function getMapClassName() {
+    if (!darkMode) {
+        if (mapTypeId === 'roadmap') {
+            return 'default';
+        } else {
+            return 'dark-mode';
+        }
+    } else {
+        return 'dark-mode';
     }
 }
 
@@ -170,19 +182,16 @@ function triggerDarkMode(active) {
         // Remove placemakers
         removePlacemarkers();
 
-        // Set some default values
-        var styles = [];
+        // Set dark mode state
+        darkMode = active;
 
-        // Check if dark mode is active
-        if (active) {
-            popupClassName = 'darkmode';
-            styles = darkModeStyles;
-        } else {
-            popupClassName = getMapClassName();
+        // Check if user has local storage and if possible store data
+        if (hasLocalStorage) {
+            localStorage.setItem('darkMode', darkMode);
         }
 
         // Set options
-        map.setOptions({styles: styles});
+        map.setOptions({styles: getMapStyles()});
 
         // Create placemarkers
         rebuildPlacemarkers();
@@ -266,7 +275,7 @@ function createPlacemarkerMarker(placemarkObject) {
     var popup = new Popup(
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
-        popupClassName
+        getMapClassName()
     );
 
     // Add to map
@@ -373,6 +382,16 @@ function initMap() {
 
     // Check if user has local storage
     if (hasLocalStorage) {
+        // Check if dark mode storage exists
+        var darkModeStorage = localStorage.getItem('darkMode');
+        if (darkModeStorage !== null) {
+            // Set dark mode
+            darkMode = darkModeStorage;
+
+            // Update checkbox
+            document.getElementById('checkbox-dark-mode').checked = darkMode;
+        }
+
         // Check if map lat storage exists
         var latLocalStorage = localStorage.getItem('mapLat');
         if (latLocalStorage !== null) {
@@ -400,11 +419,10 @@ function initMap() {
 
     // Set some values
     center = new google.maps.LatLng(mapLat, mapLng);
-    popupClassName = getMapClassName();
 
     // Setup map
     map = new google.maps.Map(document.getElementById('map'), {
-        styles: [],
+        styles: getMapStyles(),
         center: center,
         zoom: zoom,
         mapTypeId: mapTypeId
@@ -419,6 +437,9 @@ function initMap() {
         if (hasLocalStorage) {
             localStorage.setItem('mapTypeId', mapTypeId);
         }
+
+        // Create placemarkers
+        rebuildPlacemarkers();
     });
 
     // Add listener for center changed

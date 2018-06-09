@@ -23,16 +23,16 @@ html, body {
 .popup-bubble-anchor.default::after {
     border-top: 8px solid #000;
 }
-.popup-bubble-content.darkmode {
+.popup-bubble-content.dark-mode {
     background: #fefefe;
 }
-.popup-bubble-content.darkmode {
+.popup-bubble-content.dark-mode {
     color: #333;
 }
-.popup-bubble-content.darkmode {
+.popup-bubble-content.dark-mode {
     border: 1px solid #fff;
 }
-.popup-bubble-anchor.darkmode::after {
+.popup-bubble-anchor.dark-mode::after {
     border-top: 8px solid #fff;
 }
 #header {
@@ -44,7 +44,7 @@ html, body {
 #header > .container {
     display: table-row;
 }
-#logo, #darkmode {
+#logo, #dark-mode {
     display: table-cell;
     vertical-align: middle;
 }
@@ -58,11 +58,11 @@ html, body {
 #lastupdate {
     display: inline-block;
 }
-#lastupdate, #darkmode, .description {
+#lastupdate, #dark-mode, .description {
     font-size:  10px;
     color: #bfbfbf;
 }
-#lastupdate, #darkmode {
+#lastupdate, #dark-mode {
     text-align: right;
     padding-right: 10px;
 }

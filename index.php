@@ -49,10 +49,10 @@ try {
         <div id="header">
             <div class="container">
                 <div id="logo">Reddings<span>monitor</span></div>
-                <div id="darkmode">
+                <div id="dark-mode">
                     <div id="lastupdate"></div>
-                    <input id="checkbox_darkmode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" />
-                    <label for="checkbox_darkmode">Dark mode</label>
+                    <input id="checkbox-dark-mode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" />
+                    <label for="checkbox-dark-mode">Dark mode</label>
                 </div>
             </div>
         </div>
