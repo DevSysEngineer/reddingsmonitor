@@ -315,7 +315,7 @@ function loadRemoteData() {
                 if (hasGPSLocation) {
                     navigator.geolocation.getCurrentPosition(function(position) {
                         // Create placemark
-                        var gpsPlacemark = {
+                        var gpsPlacemarkObject = {
                             name: 'My location',
                             description: '',
                             centerCoordinate: {
@@ -326,7 +326,7 @@ function loadRemoteData() {
                         };
 
                         // Add GPS placemark
-                        placemarkObjects.push(gpsPlacemark);
+                        placemarkObjects.push(gpsPlacemarkObject);
 
                         // Update layout with GPS location
                         updateLayout();
@@ -334,7 +334,7 @@ function loadRemoteData() {
                         // Error by retrieving GPS location
                         updateLayout();
                     });
-                } else {]
+                } else {
                     // No GPS location
                     updateLayout();
                 }
