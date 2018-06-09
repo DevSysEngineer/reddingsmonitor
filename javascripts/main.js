@@ -267,7 +267,7 @@ function createPlacemarkerMarker(placemarkObject) {
     placemarkMapObjects.push(popup);
 }
 
-function updateLayout() {
+function updateLayout(listElement) {
     // Create sidebar elements
     for (var i = 0; i < placemarkObjects.length; i++) {
         // Get placemarkobject
@@ -329,14 +329,14 @@ function loadRemoteData() {
                         placemarkObjects.push(gpsPlacemarkObject);
 
                         // Update layout with GPS location
-                        updateLayout();
+                        updateLayout(listElement);
                     }, function() {
                         // Error by retrieving GPS location
-                        updateLayout();
+                        updateLayout(listElement);
                     });
                 } else {
                     // No GPS location
-                    updateLayout();
+                    updateLayout(listElement);
                 }
             }
         }
