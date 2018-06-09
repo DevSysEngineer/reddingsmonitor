@@ -8,9 +8,12 @@ class Token {
     protected $_valid = FALSE;
     protected $_object = NULL;
 
-    public function __construct(string $path, string $token) {
+    public function __construct(string $path, string $uuid) {
+        /* Set UUID */
+        $this->_uuid = $uuid;
+
         /* Set path */
-        $fullPath = $path . DIRECTORY_SEPARATOR . $token . '.json';
+        $fullPath = $path . DIRECTORY_SEPARATOR . $uuid . '.json';
         $this->_path = $fullPath;
 
         /* Check if file not exists */
@@ -43,6 +46,10 @@ class Token {
 
         /* Return object */
         return $object;
+    }
+
+    public function getUUID() {
+        return $this->_uuid;
     }
 
     public function isValid() : bool {

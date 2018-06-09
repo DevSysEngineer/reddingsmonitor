@@ -38,11 +38,11 @@ class Auth {
     }
 
     public function createToken() {
-        /* Create token */
-        $token = self::GenerateUUID();
+        /* Create uuid */
+        $uuid = self::GenerateUUID();
 
         /* Check if token already exists */
-        $object = new Token($this->_path, $token);
+        $object = new Token($this->_path, $uuid);
         if ($object->isValid()) {
             return $this->createToken();
         }
@@ -56,8 +56,8 @@ class Auth {
         return $object;
     }
 
-    public function checkToken(string $token) : bool {
-        $object = new Token($this->_path, $token);
+    public function checkToken(string $uuid) : bool {
+        $object = new Token($this->_path, $uuid);
         return $object->getAuthStatus();
     }
 }
