@@ -2,6 +2,9 @@
 
 namespace Reddingsmonitor\Classes;
 
+/* Require files */
+require_once 'Token.php';
+
 class Auth {
 
     protected $_path = '';
@@ -9,51 +12,13 @@ class Auth {
     public function __construct() {
         /* Create temp dir */
         $tempDir = sys_get_temp_dir();
-        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor';
-        if (!is_dir($fullDir) && !mkdir($fullDir)) {
+        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor' . DIRECTORY_SEPARATOR . 'sessions';
+        if (!is_dir($fullDir) && !mkdir($fullDir, 755, TRUE)) {
             throw new \Exception('Failed to create temp dir');
         }
 
         /* Set temp dir */
         $this->_path = $fullDir;
-    }
-
-    protected function _getTokenObject(string $token) {
-        /* Check if file not exists */
-        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
-        if (!file_exists($fullPath)) {
-            return NULL;
-        }
-
-        /* Get json from file */
-        $json = file_get_contents($fullPath);
-
-        /* Decode token */
-        $object = json_decode($json);
-        if ($object === FALSE) {
-            return NULL;
-        }
-
-        /* Return object */
-        return $object;
-    }
-
-    protected function _writeTokenObject(string $token, $object) {
-        /* Check if json encode failed */
-        $json = json_encode($object);
-        if ($json === FALSE) {
-            throw new \Exception('Failed to encode object');
-        }
-
-        /* Write file */
-        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
-        $result = file_put_contents($fullPath, $json, LOCK_EX);
-        if ($result === FALSE) {
-            throw new \Exception('Failed to write token');
-        }
-
-        /* Success */
-        return TRUE;
     }
 
     /**
@@ -72,48 +37,28 @@ class Auth {
         );
     }
 
-    public function createToken() : string {
+    public function createToken() {
         /* Create token */
         $token = self::GenerateUUID();
 
         /* Check if token already exists */
-        $fullPath = $this->_path . DIRECTORY_SEPARATOR . $token . '.json';
-        if (file_exists($fullPath)) {
+        $object = new Token($this->_path, $token);
+        if ($object->isValid()) {
             return $this->createToken();
         }
 
-        /* Create object */
-        $auth = new \stdClass;
-        $auth->creationTime = microtime(TRUE);
-        $auth->lastClientContact = microtime(TRUE);
-        $auth->ttl = 3600; /* 1 Hour */
+        /* Write objecr */
+        if (!$object->write()) {
+            return NULL;
+        }
 
-        /* Write object */
-        $this->_writeTokenObject($token, $auth);
-
-        /* Return token */
-        return $token;
+        /* Return object */
+        return $object;
     }
 
     public function checkToken(string $token) : bool {
-        /* Check if token exists */
-        $object = $this->_getTokenObject($token);
-        if ($object === NULL) {
-            return FALSE;
-        }
-
-        /* Check if token is expired */
-        if (($object->lastClientContact + $object->ttl) < microtime(TRUE)) {
-            /* Token is expired and remove file */
-            unlink($fullPath);
-            return FALSE;
-        }
-
-        /* Update lastClientContact */
-        $object->lastClientContact = microtime(TRUE);
-
-        /* Write object */
-        return $this->_writeTokenObject($token, $object);
+        $object = new Token($this->_path, $token);
+        return $object->getAuthStatus();
     }
 }
 

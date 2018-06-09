@@ -4,6 +4,7 @@ namespace Reddingsmonitor\Classes;
 
 class Config {
 
+    protected $_tmpLocation = '';
     protected $_url = '';
     protected $_kmlLocation = '';
     protected $_key = NULL;

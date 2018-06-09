@@ -27,6 +27,10 @@ try {
 
     /* Create token */
     $token = $auth->createToken();
+    if ($token === NULL) {
+        header('HTTP/1.0 405 Method Not Allowed');
+        exit;
+    }
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;

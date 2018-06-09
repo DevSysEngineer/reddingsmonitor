@@ -269,9 +269,9 @@ function createPlacemarkerMarker(placemarkObject) {
 
 function updateLayout() {
     // Create sidebar elements
-    for (var i = 0; i < placemarkMapObjects.length; i++) {
+    for (var i = 0; i < placemarkObjects.length; i++) {
         // Get placemarkobject
-        var placemarkObject = placemarkMapObjects[i];
+        var placemarkObject = placemarkObjects[i];
 
         // Add li element to list element
         var liElement = createSidebarElement(i, placemarkObject);
