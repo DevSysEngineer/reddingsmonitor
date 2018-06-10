@@ -1,7 +1,8 @@
 var map = null;
 var center = null
 var zoom = 5;
-var stop = false;
+var stopRequest = false;
+var isDragging = false;
 var Popup = null;
 var darkMode = false;
 var mapTypeId = 'roadmap';
@@ -187,7 +188,11 @@ function triggerDarkMode(active) {
 
         // Check if user has local storage and if possible store data
         if (hasLocalStorage) {
-            localStorage.setItem('darkMode', darkMode);
+            if (darkMode) {
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                localStorage.setItem('darkMode', 'false');
+            }
         }
 
         // Set options
@@ -308,7 +313,7 @@ function updateLayout(listElement) {
     document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
 
     // Ready
-    stop = false;
+    stopRequest = false;
 }
 
 function loadRemoteData() {
@@ -365,7 +370,7 @@ function loadRemoteData() {
                     }
                 }
             } else {
-                stop = false;
+                stopRequest = false;
             }
         }
     };
@@ -386,7 +391,7 @@ function initMap() {
         var darkModeStorage = localStorage.getItem('darkMode');
         if (darkModeStorage !== null) {
             // Set dark mode
-            darkMode = darkModeStorage;
+            darkMode = (darkModeStorage == 'true');
 
             // Update checkbox
             document.getElementById('checkbox-dark-mode').checked = darkMode;
@@ -467,12 +472,12 @@ function initMap() {
 
     // Add listener for drag start
     google.maps.event.addListener(map, 'dragstart', function () {
-        stop = true;
+        isDragging = true;
     });
 
     // Add listener for drag end
     google.maps.event.addListener(map, 'dragend', function () {
-        stop = false;
+        isDragging = false;
     });
 
     // Load for first time remote data
@@ -480,8 +485,8 @@ function initMap() {
 
     // Create interval for retrieving new data
     setInterval(function() {
-        if (!stop) {
-            stop = true;
+        if (!stopRequest && !isDragging) {
+            stopRequest = true;
             loadRemoteData();
         }
     }, refreshSeconds);
