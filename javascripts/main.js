@@ -347,7 +347,7 @@ function loadRemoteData() {
                             // Create placemark
                             var gpsPlacemarkObject = {
                                 name: 'Mijn locatie',
-                                description: position.coords.longitude + ', ' + position.coords.latitude
+                                description: position.coords.longitude + ', ' + position.coords.latitude,
                                 centerCoordinate: {
                                     lng: position.coords.longitude,
                                     lat: position.coords.latitude,
