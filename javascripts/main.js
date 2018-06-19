@@ -131,6 +131,8 @@ function definePopupClass() {
         var oThis = this;
         var mapDiv = this.get('map').getDiv();
 
+        console.log(mapDiv);
+
         // Add dom listener for mouselease
         google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
             google.maps.event.trigger(oThis.anchor, 'mouseup');
