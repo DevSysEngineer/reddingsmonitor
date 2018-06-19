@@ -117,6 +117,7 @@ function definePopupClass() {
         this.anchor = document.createElement('div');
         this.anchor.className = 'popup-tip-anchor ' + extraClassname;
         this.anchor.appendChild(pixelOffset);
+        this.anchor.style.position='absolute';
         this.anchor.draggable = draggable;
 
         // Stop events
@@ -179,6 +180,8 @@ function definePopupClass() {
         var divPosition = this.getProjection().fromLatLngToDivPixel(this.position);
         this.anchor.style.left = divPosition.x + 'px';
         this.anchor.style.top = divPosition.y + 'px';
+
+        console.log(divPosition);
     };
 
     Popup.prototype.stopEventPropagation = function() {
