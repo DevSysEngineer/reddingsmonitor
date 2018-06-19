@@ -290,7 +290,6 @@ function createPlacemarkerMarker(placemarkObject) {
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
         draggable,
-        draggable,
         getMapClassName(),
     );
 
