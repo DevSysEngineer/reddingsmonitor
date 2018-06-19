@@ -151,7 +151,7 @@ function definePopupClass() {
             oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
                 var origin = oThis.get('origin');
                 var left = origin.clientX-e.clientX;
-                var etop = origin.clientY-e.clientY;
+                var top = origin.clientY-e.clientY;
 
                 // Get div position
                 var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.get('position'));
