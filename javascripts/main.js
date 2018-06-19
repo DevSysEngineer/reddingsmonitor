@@ -157,9 +157,9 @@ function definePopupClass() {
         });
 
         google.maps.event.addDomListener(this.anchor, 'mouseup',function(){
-            that.map.set('draggable',true);
+            oThis.map.set('draggable',true);
             this.style.cursor='auto';
-            google.maps.event.removeListener(that.moveHandler);
+            google.maps.event.removeListener(oThis.moveHandler);
         });
 
         // Add anchor to map
