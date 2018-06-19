@@ -120,7 +120,7 @@ function definePopupClass() {
         this.anchor.draggable = draggable;
 
         // Stop events
-        this.stopEventPropagation();
+        //this.stopEventPropagation();
     };
 
     Popup.prototype = Object.create(google.maps.OverlayView.prototype);
