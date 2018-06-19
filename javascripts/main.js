@@ -136,7 +136,7 @@ function definePopupClass() {
         });
 
         // Add dom listener for mousedown
-        google.maps.event.addDomListener(container,'mousedown', function(e) {
+        google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
             this.style.cursor='move';
             oThis.map.set('draggable',false);
             oThis.set('origin', e);
@@ -156,7 +156,7 @@ function definePopupClass() {
             });
         });
 
-        google.maps.event.addDomListener(container,'mouseup',function(){
+        google.maps.event.addDomListener(this.anchor, 'mouseup',function(){
             that.map.set('draggable',true);
             this.style.cursor='auto';
             google.maps.event.removeListener(that.moveHandler);
