@@ -94,11 +94,15 @@ var darkModeStyles = [
 
 function definePopupClass() {
     Popup = function(position, title, draggable = false, extraClassname = 'default') {
-        // Set position
-        this.position = position;
+        // // Set position
+        // this.position = position;
 
-        // Set draggable state
-        this.draggable = draggable;
+        // // Set draggable state
+        // this.draggable = draggable;
+        //
+
+        // Set position
+        this.set('position', position);
 
         // Create content element
         var contentElement = document.createElement('div');
@@ -150,20 +154,21 @@ function definePopupClass() {
                 var etop = origin.clientY-e.clientY;
 
                 // Get div position
-                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
+                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.get('position'));
 
                 // Create new position
-                oThis.position = oThis.getProjection().fromDivPixelToLatLng(
+               var latLng = oThis.getProjection().fromDivPixelToLatLng(
                     new google.maps.Point(divPosition.x-left, divPosition.y-top)
                 );
 
                 oThis.set('origin', e);
+                oThis.set('position', latLng);
                 oThis.draw();
             });
         });
 
         google.maps.event.addDomListener(this.anchor, 'mouseup',function(){
-            oThis.map.set('draggable',true);
+            oThis.map.set('draggable', true);
             this.style.cursor='auto';
             google.maps.event.removeListener(oThis.moveHandler);
         });
@@ -179,7 +184,7 @@ function definePopupClass() {
     };
 
     Popup.prototype.draw = function() {
-        var divPosition = this.getProjection().fromLatLngToDivPixel(this.position);
+        var divPosition = this.getProjection().fromLatLngToDivPixel(this.get('position'));
         this.anchor.style.left = divPosition.x + 'px';
         this.anchor.style.top = divPosition.y + 'px';
 
