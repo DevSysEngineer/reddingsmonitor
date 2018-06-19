@@ -117,6 +117,7 @@ function definePopupClass() {
         this.anchor = document.createElement('div');
         this.anchor.className = 'popup-tip-anchor ' + extraClassname;
         this.anchor.appendChild(pixelOffset);
+        this.anchor.draggable = draggable;
 
         // Stop events
         this.stopEventPropagation();
@@ -125,6 +126,43 @@ function definePopupClass() {
     Popup.prototype = Object.create(google.maps.OverlayView.prototype);
 
     Popup.prototype.onAdd = function() {
+        // Set current object
+        var oThis = this;
+        var mapDiv = this.get('map').getDiv();
+
+        // Add dom listener for mouselease
+        google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
+            google.maps.event.trigger(oThis.anchor, 'mouseup');
+        });
+
+        // Add dom listener for mousedown
+        google.maps.event.addDomListener(container,'mousedown', function(e) {
+            this.style.cursor='move';
+            oThis.map.set('draggable',false);
+            oThis.set('origin', e);
+
+            oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
+                var origin = oThis.get('origin');
+                var left = origin.clientX-e.clientX;
+                var etop = origin.clientY-e.clientY;
+                var pos = oThis.getProjection().fromLatLngToDivPixel(oThis.get('position'));
+                var latLng = oThis.getProjection().fromDivPixelToLatLng(
+                    new google.maps.Point(pos.x-left, pos.y-top)
+                );
+
+                oThis.set('origin', e);
+                oThis.set('position', latLng);
+                oThis.draw();
+            });
+        });
+
+        google.maps.event.addDomListener(container,'mouseup',function(){
+            that.map.set('draggable',true);
+            this.style.cursor='auto';
+            google.maps.event.removeListener(that.moveHandler);
+        });
+
+        // Add anchor to map
         this.getPanes().floatPane.appendChild(this.anchor);
     };
 
@@ -152,7 +190,7 @@ function definePopupClass() {
         var anchor = this.anchor;
         anchor.style.cursor = 'auto';
 
-        ['click', 'dblclick', 'contextmenu', 'wheel', 'mousedown', 'touchstart',
+        ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart',
         'pointerdown'].forEach(function(event) {
             anchor.addEventListener(event, function(e) {
                 e.stopPropagation();
