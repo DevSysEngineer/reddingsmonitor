@@ -145,13 +145,16 @@ function definePopupClass() {
                 var origin = oThis.get('origin');
                 var left = origin.clientX-e.clientX;
                 var etop = origin.clientY-e.clientY;
-                var pos = oThis.getProjection().fromLatLngToDivPixel(oThis.get('position'));
-                var latLng = oThis.getProjection().fromDivPixelToLatLng(
-                    new google.maps.Point(pos.x-left, pos.y-top)
+
+                // Get div position
+                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
+
+                // Create new position
+                oThis.position = oThis.getProjection().fromDivPixelToLatLng(
+                    new google.maps.Point(divPosition.x-left, divPosition.y-top)
                 );
 
                 oThis.set('origin', e);
-                oThis.set('position', latLng);
                 oThis.draw();
             });
         });
