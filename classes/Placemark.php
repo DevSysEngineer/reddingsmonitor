@@ -67,6 +67,7 @@ class Placemark {
     public function toStdClass() {
         /* Create object */
         $object = new \stdClass;
+        $object->id = strtolower($this->_name);
         $object->name = $this->_name;
         $object->description = $this->_description;
 

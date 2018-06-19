@@ -93,9 +93,12 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(position, title, extraClassname = 'default') {
+    Popup = function(position, title, draggable = false, extraClassname = 'default') {
         // Set position
         this.position = position;
+
+        // Set draggable state
+        this.draggable = draggable;
 
         // Create content element
         var contentElement = document.createElement('div');
@@ -276,11 +279,19 @@ function createPlacemarkerMarker(placemarkObject) {
     // Get center coordinate
     var centerCoordinate = placemarkObject.centerCoordinate;
 
+    // Get draggable state
+    var draggable = false;
+    if (placemarkObject.id == 'gps') {
+        draggable = true;
+    }
+
     // Create marker
     var popup = new Popup(
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
-        getMapClassName()
+        draggable,
+        draggable,
+        getMapClassName(),
     );
 
     // Add to map
@@ -346,6 +357,7 @@ function loadRemoteData() {
                         navigator.geolocation.getCurrentPosition(function(position) {
                             // Create placemark
                             var gpsPlacemarkObject = {
+                                id: 'gps',
                                 name: 'Mijn locatie',
                                 description: position.coords.latitude + ', ' + position.coords.longitude,
                                 centerCoordinate: {
