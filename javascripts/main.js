@@ -129,12 +129,14 @@ function definePopupClass() {
     Popup.prototype = Object.create(google.maps.OverlayView.prototype);
 
     Popup.prototype.onAdd = function() {
+        // Check if map still exists
+        if (typeof(this.map) === 'undefined') {
+            return null;
+        }
+
         // Set current object
         var oThis = this;
         var mapDiv = this.map.getDiv();
-        if (typeof(mapDiv) === 'undefined') {
-            return null;
-        }
 
         // Add dom listener for mouselease
         google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
@@ -143,6 +145,11 @@ function definePopupClass() {
 
         // Add dom listener for mousedown
         google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
+            // Check if map still exists
+            if (typeof(this.map) === 'undefined') {
+                return null;
+            }
+
             // Set origin
             oThis.origin = e;
 
@@ -154,36 +161,40 @@ function definePopupClass() {
 
             // Add dom listener for mousemove
             oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
-                var origin = oThis.origin;
-                var left = origin.clientX - e.clientX;
-                var top = origin.clientY - e.clientY;
+                if (typeof(oThis.map) !== 'undefined') {
+                    var origin = oThis.origin;
+                    var left = origin.clientX - e.clientX;
+                    var top = origin.clientY - e.clientY;
 
-                // Get div position
-                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
+                    // Get div position
+                    var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
 
-                // Create new position
-                var latLng = oThis.getProjection().fromDivPixelToLatLng(
-                    new google.maps.Point(divPosition.x-left, divPosition.y-top)
-                );
+                    // Create new position
+                    var latLng = oThis.getProjection().fromDivPixelToLatLng(
+                        new google.maps.Point(divPosition.x-left, divPosition.y-top)
+                    );
 
-                // Set some values
-                oThis.origin = e;
-                oThis.position = latLng;
+                    // Set some values
+                    oThis.origin = e;
+                    oThis.position = latLng;
 
-                // Draw marker
-                oThis.draw();
+                    // Draw marker
+                    oThis.draw();
+                }
             });
         });
 
         google.maps.event.addDomListener(this.anchor, 'mouseup', function() {
-            // Set some style
-            this.style.cursor = 'auto';
+            if (typeof(oThis.map) !== 'undefined') {
+                // Set some style
+                this.style.cursor = 'auto';
 
-            // Enable draggable event for map
-            oThis.map.set('draggable', true);
+                // Enable draggable event for map
+                oThis.map.set('draggable', true);
 
-            // Remove move listener
-            google.maps.event.removeListener(oThis.moveHandler);
+                // Remove move listener
+                google.maps.event.removeListener(oThis.moveHandler);
+            }
         });
 
         // Add anchor to map
