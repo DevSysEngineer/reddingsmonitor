@@ -389,7 +389,7 @@ function createPlacemarkerMarker(placemarkObject) {
         google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
             console.log(this);
             console.log(e);
-        }
+        });
     }
 
     // Add marker
