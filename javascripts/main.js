@@ -3,6 +3,7 @@ var center = null
 var zoom = 5;
 var stopRequest = false;
 var isDragging = false;
+var isPlacemarkDragging = false;
 var Popup = null;
 var darkMode = false;
 var mapTypeId = 'roadmap';
@@ -93,12 +94,9 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(map, id, position, title, draggable = false, extraClassname = 'default') {
-        // Set map
-        this.map = map;
-        this.setMap(map);
-
+    Popup = function(id, position, title, draggable = false, extraClassname = 'default') {
         // Set some values
+        this.id = position;
         this.position = position;
         this.draggable = draggable;
         this.origin = null;
@@ -132,7 +130,8 @@ function definePopupClass() {
 
     Popup.prototype.onAdd = function() {
         // Check if map still exists
-        if (typeof(this.map) === 'undefined' || this.map === null) {
+        var map = this.getMap();
+        if (typeof(map) === 'undefined' || map === null) {
             return null;
         }
 
@@ -140,7 +139,7 @@ function definePopupClass() {
         if (this.draggable) {
             // Set current object
             var oThis = this;
-            var mapDiv = this.map.getDiv();
+            var mapDiv = map.getDiv();
 
             // Add dom listener for mouselease
             google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
@@ -150,7 +149,8 @@ function definePopupClass() {
             // Add dom listener for mousedown
             google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
                 // Check if map still exists
-                if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
+                var map = oThis.getMap();
+                if (typeof(map) === 'undefined' || map === null) {
                     return null;
                 }
 
@@ -166,7 +166,8 @@ function definePopupClass() {
                 // Add dom listener for mousemove
                 oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
                     // Check if map still exists
-                    if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
+                    var map = oThis.getMap();
+                    if (typeof(map) === 'undefined' || map === null) {
                         return null;
                     }
 
@@ -180,7 +181,7 @@ function definePopupClass() {
 
                     // Create new position
                     var latLng = oThis.getProjection().fromDivPixelToLatLng(
-                        new google.maps.Point(divPosition.x-left, divPosition.y-top)
+                        new google.maps.Point(divPosition.x - left, divPosition.y - top)
                     );
 
                     // Set some values
@@ -194,7 +195,8 @@ function definePopupClass() {
 
             google.maps.event.addDomListener(this.anchor, 'mouseup', function() {
                 // Check if map still exists
-                if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
+                var map = oThis.getMap();
+                if (typeof(map) === 'undefined' || map === null) {
                     return null;
                 }
 
@@ -202,7 +204,7 @@ function definePopupClass() {
                 this.style.cursor = 'auto';
 
                 // Enable draggable event for map
-                oThis.map.set('draggable', true);
+                map.set('draggable', true);
 
                 // Remove move listener
                 google.maps.event.removeListener(oThis.moveHandler);
@@ -211,6 +213,10 @@ function definePopupClass() {
 
         // Add anchor to map
         this.getPanes().floatPane.appendChild(this.anchor);
+    };
+
+    Popup.prototype.getId = function() {
+        return this.id;
     };
 
     Popup.prototype.getAnchor = function() {
@@ -377,7 +383,6 @@ function createPlacemarkerMarker(placemarkObject) {
 
     // Create marker
     var popup = new Popup(
-        map,
         placemarkObject.id, 
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
@@ -385,11 +390,28 @@ function createPlacemarkerMarker(placemarkObject) {
         getMapClassName(),
     );
 
+    // Set map
+    popup.setMap(map);
+
     // Check if popup is draggable
     if (draggable) {
         // Add event listener for draggable place marker
+        google.maps.event.addDomListener(popup.getAnchor(), 'mousedown', function(e) {
+            isPlacemarkDragging = true;
+        });
+
+        // Add event listener for draggable place marker
         google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
-            console.log(this.id);
+            // Search for placemark object
+            for (var i = 0; i < placemarkMapObjects.length; i++) {
+                if (placemarkMapObjects[i].getId() === this.id) {
+                    console.log('FOUND');
+                    break;
+                }
+            }
+
+            // Dragging is stopped
+            isPlacemarkDragging = false;
         });
     }
 
@@ -593,7 +615,7 @@ function initMap() {
 
     // Create interval for retrieving new data
     setInterval(function() {
-        if (!stopRequest && !isDragging) {
+        if (!stopRequest && !isDragging && !isPlacemarkDragging) {
             stopRequest = true;
             loadRemoteData();
         }
