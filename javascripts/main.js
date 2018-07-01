@@ -94,8 +94,11 @@ var darkModeStyles = [
 
 function definePopupClass() {
     Popup = function(map, position, title, draggable = false, extraClassname = 'default') {
-        // Set some values
+        // Set map
         this.map = map;
+        this.setMap(map);
+
+        // Set some values
         this.position = position;
         this.origin = null;
 
@@ -340,14 +343,12 @@ function createPlacemarkerMarker(placemarkObject) {
 
     // Create marker
     var popup = new Popup(
+        map,
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
         draggable,
         getMapClassName(),
     );
-
-    // Add to map
-    popup.setMap(map);
 
     // Add marker
     placemarkMapObjects.push(popup);
