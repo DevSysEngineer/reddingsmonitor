@@ -387,7 +387,7 @@ function createPlacemarkerMarker(placemarkObject) {
 
     // Check if popup is draggable
     if (draggable) {
-        google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
+        google.maps.event.addDomListener(popup, 'mouseup', function(e) {
             console.log(this);
             console.log(e);
         });
