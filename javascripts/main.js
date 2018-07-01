@@ -93,7 +93,7 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(map, position, title, draggable = false, extraClassname = 'default') {
+    Popup = function(map, id, position, title, draggable = false, extraClassname = 'default') {
         // Set map
         this.map = map;
         this.setMap(map);
@@ -118,6 +118,7 @@ function definePopupClass() {
 
         // Create anchor element
         this.anchor = document.createElement('div');
+        this.anchor.id = id;
         this.anchor.className = 'popup-tip-anchor ' + extraClassname;
         this.anchor.appendChild(pixelOffset);
         this.anchor.style.position = 'absolute';
@@ -210,6 +211,10 @@ function definePopupClass() {
 
         // Add anchor to map
         this.getPanes().floatPane.appendChild(this.anchor);
+    };
+
+    Popup.prototype.getAnchor = function() {
+        return this.anchor;
     };
 
     Popup.prototype.onRemove = function() {
@@ -373,11 +378,19 @@ function createPlacemarkerMarker(placemarkObject) {
     // Create marker
     var popup = new Popup(
         map,
+        placemarkObject.id, 
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
         draggable,
         getMapClassName(),
     );
+
+    if (this.draggable) {
+        google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
+            console.log(this);
+            console.log(e);
+        }
+    }
 
     // Add marker
     placemarkMapObjects.push(popup);
