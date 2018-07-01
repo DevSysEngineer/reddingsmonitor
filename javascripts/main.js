@@ -93,16 +93,11 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(position, title, draggable = false, extraClassname = 'default') {
-        // // Set position
-        // this.position = position;
-
-        // // Set draggable state
-        // this.draggable = draggable;
-        //
-
-        // Set position
-        this.set('position', position);
+    Popup = function(map, position, title, draggable = false, extraClassname = 'default') {
+        // Set some values
+        this.map = map;
+        this.position = position;
+        this.origin = null;
 
         // Create content element
         var contentElement = document.createElement('div');
@@ -125,7 +120,7 @@ function definePopupClass() {
         this.anchor.draggable = draggable;
 
         // Stop events
-        //this.stopEventPropagation();
+        this.stopEventPropagation();
     };
 
     Popup.prototype = Object.create(google.maps.OverlayView.prototype);
@@ -133,9 +128,10 @@ function definePopupClass() {
     Popup.prototype.onAdd = function() {
         // Set current object
         var oThis = this;
-        var mapDiv = this.get('map').getDiv();
-
-        console.log(mapDiv);
+        var mapDiv = this.map.getDiv();
+        if (typeof(mapDiv) === 'undefined') {
+            return null;
+        }
 
         // Add dom listener for mouselease
         google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
@@ -144,32 +140,46 @@ function definePopupClass() {
 
         // Add dom listener for mousedown
         google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
-            this.style.cursor='move';
-            oThis.map.set('draggable',false);
-            oThis.set('origin', e);
+            // Set origin
+            oThis.origin = e;
 
+            // Set some style
+            this.style.cursor = 'move';
+
+            // Disable draggable event for map
+            oThis.map.set('draggable', false);
+
+            // Add dom listener for mousemove
             oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
-                var origin = oThis.get('origin');
-                var left = origin.clientX-e.clientX;
-                var top = origin.clientY-e.clientY;
+                var origin = oThis.origin;
+                var left = origin.clientX - e.clientX;
+                var top = origin.clientY - e.clientY;
 
                 // Get div position
-                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.get('position'));
+                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
 
                 // Create new position
-               var latLng = oThis.getProjection().fromDivPixelToLatLng(
+                var latLng = oThis.getProjection().fromDivPixelToLatLng(
                     new google.maps.Point(divPosition.x-left, divPosition.y-top)
                 );
 
-                oThis.set('origin', e);
-                oThis.set('position', latLng);
+                // Set some values
+                oThis.origin = e;
+                oThis.position = latLng;
+
+                // Draw marker
                 oThis.draw();
             });
         });
 
-        google.maps.event.addDomListener(this.anchor, 'mouseup',function(){
+        google.maps.event.addDomListener(this.anchor, 'mouseup', function() {
+            // Set some style
+            this.style.cursor = 'auto';
+
+            // Enable draggable event for map
             oThis.map.set('draggable', true);
-            this.style.cursor='auto';
+
+            // Remove move listener
             google.maps.event.removeListener(oThis.moveHandler);
         });
 
@@ -184,17 +194,17 @@ function definePopupClass() {
     };
 
     Popup.prototype.draw = function() {
-        var divPosition = this.getProjection().fromLatLngToDivPixel(this.get('position'));
+        var divPosition = this.getProjection().fromLatLngToDivPixel(this.position);
         this.anchor.style.left = divPosition.x + 'px';
         this.anchor.style.top = divPosition.y + 'px';
-
-        console.log(divPosition);
     };
 
     Popup.prototype.stopEventPropagation = function() {
+        // Set style
         var anchor = this.anchor;
         anchor.style.cursor = 'auto';
 
+        // Stop events
         ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart',
         'pointerdown'].forEach(function(event) {
             anchor.addEventListener(event, function(e) {
