@@ -100,6 +100,7 @@ function definePopupClass() {
 
         // Set some values
         this.position = position;
+        this.draggable = draggable;
         this.origin = null;
 
         // Create content element
@@ -119,7 +120,7 @@ function definePopupClass() {
         this.anchor = document.createElement('div');
         this.anchor.className = 'popup-tip-anchor ' + extraClassname;
         this.anchor.appendChild(pixelOffset);
-        this.anchor.style.position='absolute';
+        this.anchor.style.position = 'absolute';
         this.anchor.draggable = draggable;
 
         // Stop events
@@ -134,75 +135,78 @@ function definePopupClass() {
             return null;
         }
 
-        // Set current object
-        var oThis = this;
-        var mapDiv = this.map.getDiv();
+        // Check if popup is draggable
+        if (this.draggable) {
+            // Set current object
+            var oThis = this;
+            var mapDiv = this.map.getDiv();
 
-        // Add dom listener for mouselease
-        google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
-            google.maps.event.trigger(oThis.anchor, 'mouseup');
-        });
+            // Add dom listener for mouselease
+            google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
+                google.maps.event.trigger(oThis.anchor, 'mouseup');
+            });
 
-        // Add dom listener for mousedown
-        google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
-            // Check if map still exists
-            if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
-                return null;
-            }
-
-            // Set origin
-            oThis.origin = e;
-
-            // Set some style
-            this.style.cursor = 'move';
-
-            // Disable draggable event for map
-            oThis.map.set('draggable', false);
-
-            // Add dom listener for mousemove
-            oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
+            // Add dom listener for mousedown
+            google.maps.event.addDomListener(this.anchor, 'mousedown', function(e) {
                 // Check if map still exists
                 if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
                     return null;
                 }
 
-                // Get left and top information
-                var origin = oThis.origin;
-                var left = origin.clientX - e.clientX;
-                var top = origin.clientY - e.clientY;
-
-                // Get div position
-                var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
-
-                // Create new position
-                var latLng = oThis.getProjection().fromDivPixelToLatLng(
-                    new google.maps.Point(divPosition.x-left, divPosition.y-top)
-                );
-
-                // Set some values
+                // Set origin
                 oThis.origin = e;
-                oThis.position = latLng;
 
-                // Draw marker
-                oThis.draw();
+                // Set some style
+                this.style.cursor = 'move';
+
+                // Disable draggable event for map
+                oThis.map.set('draggable', false);
+
+                // Add dom listener for mousemove
+                oThis.moveHandler = google.maps.event.addDomListener(mapDiv, 'mousemove', function(e) {
+                    // Check if map still exists
+                    if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
+                        return null;
+                    }
+
+                    // Get left and top information
+                    var origin = oThis.origin;
+                    var left = origin.clientX - e.clientX;
+                    var top = origin.clientY - e.clientY;
+
+                    // Get div position
+                    var divPosition = oThis.getProjection().fromLatLngToDivPixel(oThis.position);
+
+                    // Create new position
+                    var latLng = oThis.getProjection().fromDivPixelToLatLng(
+                        new google.maps.Point(divPosition.x-left, divPosition.y-top)
+                    );
+
+                    // Set some values
+                    oThis.origin = e;
+                    oThis.position = latLng;
+
+                    // Draw marker
+                    oThis.draw();
+                });
             });
-        });
 
-        google.maps.event.addDomListener(this.anchor, 'mouseup', function() {
-            // Check if map still exists
-            if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
-                return null;
-            }
+            google.maps.event.addDomListener(this.anchor, 'mouseup', function() {
+                // Check if map still exists
+                if (typeof(oThis.map) === 'undefined' || oThis.map === null) {
+                    return null;
+                }
 
-            // Set some style
-            this.style.cursor = 'auto';
+                // Set some style
+                this.style.cursor = 'auto';
 
-            // Enable draggable event for map
-            oThis.map.set('draggable', true);
+                // Enable draggable event for map
+                oThis.map.set('draggable', true);
 
-            // Remove move listener
-            google.maps.event.removeListener(oThis.moveHandler);
-        });
+                // Remove move listener
+                google.maps.event.removeListener(oThis.moveHandler);
+            });
+        }
 
         // Add anchor to map
         this.getPanes().floatPane.appendChild(this.anchor);
@@ -225,9 +229,16 @@ function definePopupClass() {
         var anchor = this.anchor;
         anchor.style.cursor = 'auto';
 
+        // Set events
+        var events = null;
+        if (this.draggable) {
+            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown'];
+        } else {
+            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown', 'mousedown', 'mouseup'];
+        }
+
         // Stop events
-        ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart',
-        'pointerdown'].forEach(function(event) {
+        events.forEach(function(event) {
             anchor.addEventListener(event, function(e) {
                 e.stopPropagation();
             });
