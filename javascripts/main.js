@@ -436,8 +436,15 @@ function createPlacemarkerMarker(placemarkObject) {
             }
 
             // Create sidebar elements
-            for (var i = 0; i < placemarkMapObjects.length; i++) {
-                var liElement = createSidebarElement(i, placemarkMapObjects[i]);
+            for (var i = 0; i < placemarkObjects.length; i++) {
+                // Search for object with same id and update center coordinate
+                if (placemarkObjects[i].id == this.id) {
+                    placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
+                    placemarkObjects[i].centerCoordinate.lng = coordinate.lat;
+                }
+
+                // Create  li element
+                var liElement = createSidebarElement(i, placemarkObjects[i]);
                 listElement.appendChild(liElement);
             }
 
