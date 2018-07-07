@@ -1,5 +1,6 @@
 var map = null;
 var center = null
+var gpsLocation = null;
 var zoom = 5;
 var stopRequest = false;
 var isDragging = false;
@@ -96,7 +97,7 @@ var darkModeStyles = [
 function definePopupClass() {
     Popup = function(id, position, title, draggable = false, extraClassname = 'default') {
         // Set some values
-        this.id = position;
+        this.id = id;
         this.position = position;
         this.draggable = draggable;
         this.origin = null;
@@ -217,6 +218,10 @@ function definePopupClass() {
 
     Popup.prototype.getId = function() {
         return this.id;
+    };
+
+    Popup.prototype.getPosition = function() {
+        return this.position;
     };
 
     Popup.prototype.getAnchor = function() {
@@ -383,7 +388,7 @@ function createPlacemarkerMarker(placemarkObject) {
 
     // Create marker
     var popup = new Popup(
-        placemarkObject.id, 
+        placemarkObject.id,
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
         draggable,
@@ -403,11 +408,37 @@ function createPlacemarkerMarker(placemarkObject) {
         // Add event listener for draggable place marker
         google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
             // Search for placemark object
+            var coordinate = { lng: -1, lat: -1 };
             for (var i = 0; i < placemarkMapObjects.length; i++) {
-                if (placemarkMapObjects[i].getId() === this.id) {
-                    console.log('FOUND');
+                if (placemarkMapObjects[i].getId() == this.id) {
+                    var position = placemarkMapObjects[i].getPosition();
+                    coordinate.lng = position.lng();
+                    coordinate.lat = position.lat();
                     break;
                 }
+            }
+
+            // Set local storage data
+            if (hasLocalStorage) {
+                localStorage.setItem(this.id + 'Lng', coordinate.lng);
+                localStorage.setItem(this.id + 'Lat', coordinate.lat);
+            }
+
+            // Check if id is GPS; If yes, update GPS location
+            if (this.id == 'gps') {
+                gpsLocation = (coordinate.lng >= 0 && coordinate.lat >= 0) ? coordinate : null;
+            }
+
+            // Remove sidebar elements
+            var listElement = document.getElementById('list');
+            while (listElement.firstChild) {
+                listElement.removeChild(listElement.firstChild);
+            }
+
+            // Create sidebar elements
+            for (var i = 0; i < placemarkMapObjects.length; i++) {
+                var liElement = createSidebarElement(i, placemarkMapObjects[i]);
+                listElement.appendChild(liElement);
             }
 
             // Dragging is stopped
@@ -469,33 +500,54 @@ function loadRemoteData() {
                     // Set response payload
                     placemarkObjects = jsonResponse.payload;
 
-                    // Check if GPS location is enabled
-                    if (hasGPSLocation) {
-                        // Try to get GPS location of current device
-                        navigator.geolocation.getCurrentPosition(function(position) {
-                            // Create placemark
-                            var gpsPlacemarkObject = {
-                                id: 'gps',
-                                name: 'Mijn locatie',
-                                description: position.coords.latitude + ', ' + position.coords.longitude,
-                                centerCoordinate: {
-                                    lng: position.coords.longitude,
-                                    lat: position.coords.latitude,
-                                    alt: 0
-                                }
-                            };
+                    // Check if gps location is null
+                    if (gpsLocation === null) {
+                        // Check if GPS location is enabled
+                        if (hasGPSLocation) {
+                            // Try to get GPS location of current device
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                // Create placemark
+                                var gpsPlacemarkObject = {
+                                    id: 'gps',
+                                    name: 'Mijn locatie',
+                                    description: position.coords.latitude + ', ' + position.coords.longitude,
+                                    centerCoordinate: {
+                                        lng: position.coords.longitude,
+                                        lat: position.coords.latitude,
+                                        alt: 0
+                                    }
+                                };
 
-                            // Add GPS placemark
-                            placemarkObjects.unshift(gpsPlacemarkObject);
+                                // Add GPS placemark
+                                placemarkObjects.unshift(gpsPlacemarkObject);
 
-                            // Update layout with GPS location
+                                // Update layout with GPS location
+                                updateLayout(listElement);
+                            }, function() {
+                                // Error by retrieving GPS location
+                                updateLayout(listElement);
+                            });
+                        } else {
+                            // No GPS location
                             updateLayout(listElement);
-                        }, function() {
-                            // Error by retrieving GPS location
-                            updateLayout(listElement);
-                        });
+                        }
                     } else {
-                        // No GPS location
+                        // Create placemark
+                        var gpsPlacemarkObject = {
+                            id: 'gps',
+                            name: 'Mijn locatie',
+                            description: gpsLocation.lat + ', ' + gpsLocation.lng,
+                            centerCoordinate: {
+                                lng: gpsLocation.lng,
+                                lat: gpsLocation.lat,
+                                alt: 0
+                            }
+                        };
+
+                        // Add GPS placemark
+                        placemarkObjects.unshift(gpsPlacemarkObject);
+
+                        // Update layout with GPS location
                         updateLayout(listElement);
                     }
                 }
@@ -550,6 +602,15 @@ function initMap() {
         if (mapTypeIdLocalStorage !== null) {
             mapTypeId = mapTypeIdLocalStorage;
         }
+
+        // Get GPS location
+        var gpsLatLocalStorage = localStorage.getItem('gpsLat');
+        var gpsLngLocalStorage = localStorage.getItem('gpsLng');
+        if (gpsLatLocalStorage !== null && gpsLngLocalStorage !== null) {
+            if (gpsLatLocalStorage >= 0 && gpsLngLocalStorage >= 0) {
+                gpsLocation = { lat: gpsLatLocalStorage, lng: gpsLngLocalStorage };
+            }
+        }
     }
 
     // Set some values
@@ -572,6 +633,9 @@ function initMap() {
         if (hasLocalStorage) {
             localStorage.setItem('mapTypeId', mapTypeId);
         }
+
+        // Remove placemakers
+        removePlacemarkers();
 
         // Create placemarkers
         rebuildPlacemarkers();
