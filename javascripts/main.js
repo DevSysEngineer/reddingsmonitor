@@ -333,20 +333,20 @@ function createSidebarElement(index, placemarkObject) {
     var titleContent = document.createTextNode(placemarkObject.name);
     titleElement.appendChild(titleContent);
 
-    // Create description element
-    var descriptionElement = document.createElement('div');
-    descriptionElement.className = 'description';
+    // Create location element
+    var locationElement = document.createElement('div');
+    locationElement.className = 'location';
 
-    // Create description content
+    // Create location content
     var centerCoordinate = placemarkObject.centerCoordinate;
-    var descriptionContent = document.createTextNode(centerCoordinate.lat + ', ' + centerCoordinate.lng);
-    descriptionElement.appendChild(descriptionContent);
+    var locationContent = document.createTextNode(centerCoordinate.lat + ', ' + centerCoordinate.lng);
+    locationElement.appendChild(locationContent);
 
     // Create a element
     var aElement = document.createElement('a');
     aElement.className = 'placemark-' + index;
     aElement.appendChild(titleElement);
-    aElement.appendChild(descriptionElement);
+    aElement.appendChild(locationElement);
     aElement.onclick = function() {
         // Get index
         var className = this.className;

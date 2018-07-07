@@ -58,7 +58,7 @@ html, body {
 #lastupdate {
     display: inline-block;
 }
-#lastupdate, #dark-mode, .description {
+#lastupdate, #dark-mode, .location {
     font-size:  10px;
     color: #bfbfbf;
 }
