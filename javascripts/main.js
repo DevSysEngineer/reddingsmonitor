@@ -338,7 +338,8 @@ function createSidebarElement(index, placemarkObject) {
     descriptionElement.className = 'description';
 
     // Create description content
-    var descriptionContent = document.createTextNode(placemarkObject.description);
+    var centerCoordinate = placemarkObject.centerCoordinate;
+    var descriptionContent = document.createTextNode(centerCoordinate.lat + ', ' + centerCoordinate.lng);
     descriptionElement.appendChild(descriptionContent);
 
     // Create a element
@@ -408,6 +409,7 @@ function createPlacemarkerMarker(placemarkObject) {
         // Add event listener for draggable place marker
         google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
             // Search for placemark object
+            var date = new Date();
             var coordinate = { lng: -1, lat: -1 };
             for (var i = 0; i < placemarkMapObjects.length; i++) {
                 if (placemarkMapObjects[i].getId() == this.id) {
@@ -437,8 +439,9 @@ function createPlacemarkerMarker(placemarkObject) {
 
             // Create sidebar elements
             for (var i = 0; i < placemarkObjects.length; i++) {
-                // Search for object with same id and update center coordinate
+                // Search for object with same id and update some values
                 if (placemarkObjects[i].id == this.id) {
+                    placemarkObjects[i].updateTime = date.now();
                     placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
                     placemarkObjects[i].centerCoordinate.lng = coordinate.lat;
                 }
@@ -513,11 +516,15 @@ function loadRemoteData() {
                         if (hasGPSLocation) {
                             // Try to get GPS location of current device
                             navigator.geolocation.getCurrentPosition(function(position) {
+                                // Create date object
+                                var date = new Date();
+
                                 // Create placemark
                                 var gpsPlacemarkObject = {
                                     id: 'gps',
                                     name: 'Mijn locatie',
-                                    description: position.coords.latitude + ', ' + position.coords.longitude,
+                                    description: '',
+                                    updateTime: date.now(),
                                     centerCoordinate: {
                                         lng: position.coords.longitude,
                                         lat: position.coords.latitude,
@@ -539,11 +546,15 @@ function loadRemoteData() {
                             updateLayout(listElement);
                         }
                     } else {
+                        // Create date object
+                        var date = new Date();
+
                         // Create placemark
                         var gpsPlacemarkObject = {
                             id: 'gps',
                             name: 'Mijn locatie',
-                            description: gpsLocation.lat + ', ' + gpsLocation.lng,
+                            description: '',
+                            updateTime: date.now(),
                             centerCoordinate: {
                                 lng: gpsLocation.lng,
                                 lat: gpsLocation.lat,
