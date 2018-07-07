@@ -441,7 +441,7 @@ function createPlacemarkerMarker(placemarkObject) {
             for (var i = 0; i < placemarkObjects.length; i++) {
                 // Search for object with same id and update some values
                 if (placemarkObjects[i].id == this.id) {
-                    placemarkObjects[i].updateTime = date.now();
+                    placemarkObjects[i].updateTime = new Date().getTime();
                     placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
                     placemarkObjects[i].centerCoordinate.lng = coordinate.lat;
                 }
@@ -516,15 +516,12 @@ function loadRemoteData() {
                         if (hasGPSLocation) {
                             // Try to get GPS location of current device
                             navigator.geolocation.getCurrentPosition(function(position) {
-                                // Create date object
-                                var date = new Date();
-
                                 // Create placemark
                                 var gpsPlacemarkObject = {
                                     id: 'gps',
                                     name: 'Mijn locatie',
                                     description: '',
-                                    updateTime: date.now(),
+                                    updateTime: new Date().getTime(),
                                     centerCoordinate: {
                                         lng: position.coords.longitude,
                                         lat: position.coords.latitude,
@@ -546,15 +543,12 @@ function loadRemoteData() {
                             updateLayout(listElement);
                         }
                     } else {
-                        // Create date object
-                        var date = new Date();
-
                         // Create placemark
                         var gpsPlacemarkObject = {
                             id: 'gps',
                             name: 'Mijn locatie',
                             description: '',
-                            updateTime: date.now(),
+                            updateTime: new Date().getTime(),
                             centerCoordinate: {
                                 lng: gpsLocation.lng,
                                 lat: gpsLocation.lat,
