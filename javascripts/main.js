@@ -230,10 +230,8 @@ function definePopupClass() {
     };
 
     Popup.prototype.onRemove = function() {
-        // Clear events
-        this.defaultEvents.forEach(function(event) {
-            google.maps.event.clearListeners(this.anchor, event);
-        });
+        // Remove listeners
+        google.maps.event.clearInstanceListeners(this.anchor);
 
         // Remove element
         if (this.anchor.parentElement) {
