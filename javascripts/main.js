@@ -101,7 +101,6 @@ function definePopupClass() {
         this.position = position;
         this.draggable = draggable;
         this.origin = null;
-        this.defaultEvents = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown', 'mousedown', 'mouseup'];
 
         // Create content element
         var contentElement = document.createElement('div');
@@ -229,9 +228,13 @@ function definePopupClass() {
         return this.anchor;
     };
 
+    Popup.prototype.clearEvents = function() {
+        google.maps.event.clearInstanceListeners(this.anchor);
+    }
+
     Popup.prototype.onRemove = function() {
         // Remove listeners
-        google.maps.event.clearInstanceListeners(this.anchor);
+        this.clearEvents();
 
         // Remove element
         if (this.anchor.parentElement) {
@@ -250,8 +253,16 @@ function definePopupClass() {
         var anchor = this.anchor;
         anchor.style.cursor = 'auto';
 
+        // Set events
+        var events = null;
+        if (this.draggable) {
+            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown'];
+        } else {
+            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown', 'mousedown', 'mouseup'];
+        }
+
         // Stop events
-        this.defaultEvents.forEach(function(event) {
+        events.forEach(function(event) {
             anchor.addEventListener(event, function(e) {
                 e.stopPropagation();
             });
@@ -305,6 +316,11 @@ function triggerDarkMode(active) {
 }
 
 function removePlacemarkers() {
+    // Remove events from placemarkers
+    for (var i = 0; i < placemarkMapObjects.length; i++) {
+        placemarkMapObjects[i].clearEvents();
+    }
+
     // Remove placemakers
     for (var i = 0; i < placemarkMapObjects.length; i++) {
         placemarkMapObjects[i].setMap(null);
