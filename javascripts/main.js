@@ -100,6 +100,7 @@ function definePopupClass() {
         this.id = id;
         this.position = position;
         this.draggable = draggable;
+        this.isDragging = false;
         this.origin = null;
 
         // Create content element
@@ -142,9 +143,11 @@ function definePopupClass() {
             var oThis = this;
             var mapDiv = map.getDiv();
 
-            // Add dom listener for mouselease
+            // // Add dom listener for mouselease
             google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
-                google.maps.event.trigger(oThis.anchor, 'mouseup');
+                if (othis.isDragging) {
+                    google.maps.event.trigger(oThis.anchor, 'mouseup');
+                }
             });
 
             // Add dom listener for mousedown
@@ -155,8 +158,9 @@ function definePopupClass() {
                     return null;
                 }
 
-                // Set origin
+                // Set some settings
                 oThis.origin = e;
+                oThis.isDragging = false;
 
                 // Set some style
                 this.style.cursor = 'move';
@@ -171,6 +175,9 @@ function definePopupClass() {
                     if (typeof(map) === 'undefined' || map === null) {
                         return null;
                     }
+
+                    // Set dragging state
+                    oThis.isDragging = true;
 
                     // Get left and top information
                     var origin = oThis.origin;
@@ -316,11 +323,6 @@ function triggerDarkMode(active) {
 }
 
 function removePlacemarkers() {
-    // Remove events from placemarkers
-    for (var i = 0; i < placemarkMapObjects.length; i++) {
-        placemarkMapObjects[i].clearEvents();
-    }
-
     // Remove placemakers
     for (var i = 0; i < placemarkMapObjects.length; i++) {
         placemarkMapObjects[i].setMap(null);
