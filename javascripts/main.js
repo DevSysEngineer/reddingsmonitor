@@ -145,7 +145,7 @@ function definePopupClass() {
 
             // // Add dom listener for mouselease
             google.maps.event.addDomListener(mapDiv, 'mouseleave', function() {
-                if (othis.isDragging) {
+                if (oThis.isDragging) {
                     google.maps.event.trigger(oThis.anchor, 'mouseup');
                 }
             });
