@@ -101,6 +101,7 @@ function definePopupClass() {
         this.position = position;
         this.draggable = draggable;
         this.origin = null;
+        this.defaultEvents = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown', 'mousedown', 'mouseup'];
 
         // Create content element
         var contentElement = document.createElement('div');
@@ -229,6 +230,12 @@ function definePopupClass() {
     };
 
     Popup.prototype.onRemove = function() {
+        // Clear events
+        this.defaultEvents.forEach(function(event) {
+            google.maps.event.clearListeners(this.anchor, event);
+        });
+
+        // Remove element
         if (this.anchor.parentElement) {
             this.anchor.parentElement.removeChild(this.anchor);
         }
@@ -245,16 +252,8 @@ function definePopupClass() {
         var anchor = this.anchor;
         anchor.style.cursor = 'auto';
 
-        // Set events
-        var events = null;
-        if (this.draggable) {
-            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown'];
-        } else {
-            events = ['click', 'dblclick', 'contextmenu', 'wheel', 'touchstart', 'pointerdown', 'mousedown', 'mouseup'];
-        }
-
         // Stop events
-        events.forEach(function(event) {
+        this.defaultEvents.forEach(function(event) {
             anchor.addEventListener(event, function(e) {
                 e.stopPropagation();
             });
@@ -443,7 +442,7 @@ function createPlacemarkerMarker(placemarkObject) {
                 if (placemarkObjects[i].id == this.id) {
                     placemarkObjects[i].updateTime = new Date().getTime();
                     placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
-                    placemarkObjects[i].centerCoordinate.lng = coordinate.lat;
+                    placemarkObjects[i].centerCoordinate.lat = coordinate.lat;
                 }
 
                 // Create  li element

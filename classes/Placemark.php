@@ -11,6 +11,7 @@ class Placemark {
 
     protected $_name = NULL;
     protected $_description = '';
+    protected $_updateTime = 0;
 
     protected $_coordinates = [];
 
@@ -47,6 +48,9 @@ class Placemark {
                 }
             }
         }
+
+        /* Get update time */
+        $this->_updateTime = time();
     }
 
     protected function _getText($parentElement, $id) {
@@ -64,12 +68,13 @@ class Placemark {
         return ($this->_name !== NULL);
     }
 
-    public function toStdClass() {
+    public function toStdClass() : \stdClass {
         /* Create object */
         $object = new \stdClass;
         $object->id = strtolower($this->_name);
         $object->name = $this->_name;
         $object->description = $this->_description;
+        $object->updateTime = $this->_updateTime;
 
         /* Get center coordinate */
         if ($this->_centerCoordinate !== NULL) {
