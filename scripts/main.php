@@ -12,8 +12,20 @@ try {
         '%scriptMain%' => $config->createScriptURL($_GET["token"], 'list')
     ];
 
+    /* Check if main file not exists */
+    $mainFile = $config->getFilesDir('main.js');
+    if (!file_exists($mainFile)) {
+        /* Minifier current javascript file */
+        $minifier = new Minify\JS('../javascripts/main.js');
+        $content = $minifier->minify();
+
+        /* Write minifier output to file */
+        file_put_contents($mainFile, $content);
+    } else {
+        $content = file_get_contents($mainFile);
+    }
+
     /* Get javascript location */
-    $content = file_get_contents('../javascripts/main.js');
     $output = str_replace(array_keys($replace), array_values($replace), $content);
 
     /* Set header */

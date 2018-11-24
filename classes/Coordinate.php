@@ -10,22 +10,27 @@ class Coordinate {
 
     public function __construct($text) {
         /* Explode text */
-        $expl = explode(',', $text);
+        $expl = explode(', ', $text);
+        $result = array_map([$this, '_convertToFloat'], $expl);
 
         /* Get longitude */
-        if (!empty($expl[0])) {
-            $this->_lng = floatval($expl[0]);
+        if (!empty($result[0])) {
+            $this->_lng = $result[0];
         }
 
         /* Get latitude */
-        if (!empty($expl[1])) {
-            $this->_lat = floatval($expl[1]);
+        if (!empty($result[1])) {
+            $this->_lat = $result[1];
         }
 
         /* Get altitude */
-        if (!empty($expl[2])) {
-            $this->_alt = floatval($expl[2]);
+        if (!empty($result[2])) {
+            $this->_alt = $result[2];
         }
+    }
+
+    protected function _convertToFloat($value) {
+        return floatval(str_replace(',', '.', $value));
     }
 
     public function toStdClass() {

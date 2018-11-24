@@ -10,6 +10,19 @@ class Config {
     protected $_whitelistIPs = [];
     protected $_googleMapsAPIKey = NULL;
     protected $_refreshSeconds = 30;
+    protected $_filesDir = NULL;
+
+    public function __construct() {
+        /* Create temp dir */
+        $tempDir = sys_get_temp_dir();
+        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor' . DIRECTORY_SEPARATOR . 'files';
+        if (!is_dir($fullDir) && !mkdir($fullDir, 755, TRUE)) {
+            throw new \Exception('Failed to create temp dir');
+        }
+
+        /* Set files dir */
+        $this->_filesDir = $fullDir;
+    }
 
     public function setURL(string $url) {
         $this->_url = $url;
@@ -53,6 +66,17 @@ class Config {
 
     public function getRefreshSeconds() {
         return $this->_refreshSeconds;
+    }
+
+    public function getFilesDir($filename = NULL) {
+        /* Create full path based on filename */
+        $filesDir = $this->_filesDir;
+        if (!empty($filename)) {
+            $filesDir .= DIRECTORY_SEPARATOR . $filename;
+        }
+
+        /* Return full path */
+        return $filesDir;
     }
 
     public function setGoogleMapsAPIKey(string $apiKey) {
