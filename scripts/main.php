@@ -2,6 +2,8 @@
 
 namespace Reddingsmonitor\Scripts;
 
+use MatthiasMullie\Minify;
+
 try {
     /* Require load */
     require_once 'load.php';
