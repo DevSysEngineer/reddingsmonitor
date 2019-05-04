@@ -9,8 +9,8 @@ class Placemark {
 
     const TYPE_UNKNOWN = 'unknown';
     const TYPE_CAR = 'car';
-    const TYPE_PORTABLE_RADIO = 'portable_radio';
-    const TYPE_RIB_BOAT = 'rib_boat';
+    const TYPE_RADIO_PORTABLE = 'radio_portable';
+    const TYPE_BOAT_RIB = 'boat_rib';
     const TPYE_WATER_SCOOTER = 'water_scooter';
 
     protected $_config = NULL;
@@ -42,9 +42,9 @@ class Placemark {
             if (in_array($type, ['car', 'auto'])) {
                 $this->_type = self::TYPE_CAR;
             } elseif (in_array($type, ['portofoon'])) {
-                $this->_type = self::TYPE_PORTABLE_RADIO;
+                $this->_type = self::TYPE_RADIO_PORTABLE;
             } elseif (in_array($type, ['rib'])) {
-                $this->_type = self::TYPE_RIB_BOAT;
+                $this->_type = self::TYPE_BOAT_RIB;
             } elseif (in_array($type, ['rwc'])) {
                 $this->_type = self::TPYE_WATER_SCOOTER;
             }

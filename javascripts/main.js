@@ -111,10 +111,13 @@ function definePopupClass() {
         var iconClassName = '';
         switch (type) {
             case 'car':
-                iconClassName = 'fas fa-car';
+                iconClassName = 'fas fa-truck-monster';
                 break;
-            case 'portable_radio':
+            case 'radio_portable':
                 iconClassName = 'fas fa-phone';
+                break;
+            case 'boat_rib':
+                iconClassName = 'fas fa-ship';
                 break;
         }
 
@@ -369,10 +372,13 @@ function createSidebarElement(index, placemarkObject) {
     var iconClassName = '';
     switch (placemarkObject.type) {
         case 'car':
-            iconClassName = 'fas fa-car';
+            iconClassName = 'fas fa-truck-monster';
             break;
-        case 'portable_radio':
+        case 'radio_portable':
             iconClassName = 'fas fa-phone';
+            break;
+        case 'boat_rib':
+            iconClassName = 'fas fa-ship';
             break;
     }
 
