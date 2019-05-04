@@ -129,3 +129,6 @@ html, body {
     overflow-y: auto;
     max-height: 60px;
 }
+.fa {
+    padding-right: 5px;
+}

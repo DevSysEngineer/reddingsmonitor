@@ -358,7 +358,7 @@ function createSidebarElement(index, placemarkObject) {
             break;
     }
 
-    /* If icon class name is not empty; If not create icon element */
+    // If icon class name is not empty; If not create icon element
     if (iconClassName != '') {
         iElement = document.createElement('i');
         iElement.className = iconClassName;
@@ -367,6 +367,22 @@ function createSidebarElement(index, placemarkObject) {
 
     // Apply text
     titleElement.appendChild(titleContent);
+
+    // Create location element
+    var locationElement = document.createElement('div');
+    locationElement.className = 'location';
+
+    // Create location content
+    var centerCoordinate = placemarkObject.centerCoordinate;
+    var locationContent = document.createTextNode(centerCoordinate.lat + ', ' + centerCoordinate.lng);
+    locationElement.appendChild(locationContent);
+
+    // Create a element
+    var aElement = document.createElement('a');
+    aElement.className = 'placemark-' + index;
+
+    // Add title element
+    aElement.appendChild(titleElement);
 
     // Create type content
     var typeContent = null;
@@ -385,28 +401,19 @@ function createSidebarElement(index, placemarkObject) {
             break;
     }
 
-    // Check if tpye content is not NULL
+    // Check if type content is not NULL
     if (typeContent != null) {
          // Create type element
         var typeElement = document.createElement('div');
         typeElement.className = 'type';
         typeElement.appendChild(typeContent);
+        aElement.appendChild(typeElement);
     }
 
-    // Create location element
-    var locationElement = document.createElement('div');
-    locationElement.className = 'location';
-
-    // Create location content
-    var centerCoordinate = placemarkObject.centerCoordinate;
-    var locationContent = document.createTextNode(centerCoordinate.lat + ', ' + centerCoordinate.lng);
-    locationElement.appendChild(locationContent);
-
-    // Create a element
-    var aElement = document.createElement('a');
-    aElement.className = 'placemark-' + index;
-    aElement.appendChild(titleElement);
+    // Add location element
     aElement.appendChild(locationElement);
+
+    // Create onclick event
     aElement.onclick = function() {
         // Get index
         var className = this.className;

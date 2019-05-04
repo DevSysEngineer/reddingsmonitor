@@ -32,7 +32,7 @@ class Placemark {
         }
 
         /* Set default type */
-        $this->type = self::TYPE_UNKNOWN;
+        $this->_type = self::TYPE_UNKNOWN;
 
         /* Check if name has spaces */
         $expl = explode(' ' , $name);
@@ -40,18 +40,18 @@ class Placemark {
             /* Check if value from explode is valid type */
             $type = trim(strtolower($expl[1]));
             if (in_array($type, ['car', 'auto'])) {
-                $this->type = self::TYPE_CAR;
+                $this->_type = self::TYPE_CAR;
             } elseif (in_array($type, ['portofoon'])) {
-                $this->type = self::TYPE_PORTABLE_RADIO;
+                $this->_type = self::TYPE_PORTABLE_RADIO;
             } elseif (in_array($type, ['rib'])) {
-                $this->type = self::TYPE_RIB_BOAT;
+                $this->_type = self::TYPE_RIB_BOAT;
             } elseif (in_array($type, ['rwc'])) {
-                $this->type = self::TPYE_WATER_SCOOTER;
+                $this->_type = self::TPYE_WATER_SCOOTER;
             }
 
             /* Check if type is changes; If changed, update name */
-            if ($this->type !== self::TYPE_UNKNOWN) {
-                $this->name = trim($expl[1]);
+            if ($this->_type !== self::TYPE_UNKNOWN) {
+                $this->_name = trim($expl[1]);
             }
         }
 
@@ -104,7 +104,7 @@ class Placemark {
         $object = new \stdClass;
         $object->id = strtolower($this->_name);
         $object->name = $this->_name;
-        $object->type = $this->type;
+        $object->type = $this->_type;
         $object->description = $this->_description;
         $object->updateTime = $this->_updateTime;
 
