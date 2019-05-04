@@ -14,7 +14,7 @@ html, body {
 #header, #list li a:hover, .popup-bubble-content.default {
     background: #333;
 }
-#logo, .title, .popup-bubble-content.default {
+#logo, .title, .type, .popup-bubble-content.default {
     color: #fefefe;
 }
 .popup-bubble-content.default {
@@ -129,6 +129,6 @@ html, body {
     overflow-y: auto;
     max-height: 60px;
 }
-.fa {
+.fas {
     padding-right: 5px;
 }

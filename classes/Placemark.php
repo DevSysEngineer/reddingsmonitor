@@ -51,7 +51,7 @@ class Placemark {
 
             /* Check if type is changes; If changed, update name */
             if ($this->_type !== self::TYPE_UNKNOWN) {
-                $this->_name = trim($expl[1]);
+                $this->_name = trim($expl[0]);
             }
         }
 
