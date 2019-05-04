@@ -95,7 +95,7 @@ var darkModeStyles = [
 ];
 
 function definePopupClass() {
-    Popup = function(id, position, title, draggable = false, extraClassname = 'default') {
+    Popup = function(id, position, title, type = 'unknown', draggable = false, extraClassname = 'default') {
         // Set some values
         this.id = id;
         this.position = position;
@@ -106,6 +106,24 @@ function definePopupClass() {
         // Create content element
         var contentElement = document.createElement('div');
         contentElement.className = 'popup-bubble-content ' + extraClassname;
+
+        // Create type icon
+        var iconClassName = '';
+        switch (placemarkObject.type) {
+            case 'car':
+                iconClassName = 'fas fa-car';
+                break;
+            case 'portable_radio':
+                iconClassName = 'fas fa-phone';
+                break;
+        }
+
+        // If icon class name is not empty; If not create icon element
+        if (iconClassName != '') {
+            iElement = document.createElement('i');
+            iElement.className = iconClassName;
+            contentElement.appendChild(iElement);
+        }
 
         // Create title content
         var titleContent = document.createTextNode(title);
@@ -354,7 +372,7 @@ function createSidebarElement(index, placemarkObject) {
             iconClassName = 'fas fa-car';
             break;
         case 'portable_radio':
-            iconClassName = 'fas fa-mobile';
+            iconClassName = 'fas fa-phone';
             break;
     }
 
@@ -365,7 +383,7 @@ function createSidebarElement(index, placemarkObject) {
         titleElement.appendChild(iElement);
     }
 
-    // Apply text
+    // Add text node
     titleElement.appendChild(titleContent);
 
     // Create location element
@@ -388,16 +406,16 @@ function createSidebarElement(index, placemarkObject) {
     var typeContent = null;
     switch (placemarkObject.type) {
         case 'car':
-            typeContent = document.createTextNode('Type: Car' );
+            typeContent = document.createTextNode('Car');
             break;
         case 'portable_radio':
-            typeContent = document.createTextNode('Type: Portable radio');
+            typeContent = document.createTextNode('Portable radio');
             break;
         case 'rib_boat':
-            typeContent = document.createTextNode('Type: Rib boat');
+            typeContent = document.createTextNode('Rib boat');
             break;
         case 'water_scooter':
-            typeContent = document.createTextNode('Type: Water scooter');
+            typeContent = document.createTextNode('Water scooter');
             break;
     }
 
@@ -459,6 +477,7 @@ function createPlacemarkerMarker(placemarkObject) {
         placemarkObject.id,
         new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
         placemarkObject.name,
+        placemarkObject.type,
         draggable,
         getMapClassName(),
     );
