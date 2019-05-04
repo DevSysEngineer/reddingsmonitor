@@ -109,7 +109,7 @@ function definePopupClass() {
 
         // Create type icon
         var iconClassName = '';
-        switch (placemarkObject.type) {
+        switch (type) {
             case 'car':
                 iconClassName = 'fas fa-car';
                 break;
