@@ -346,7 +346,52 @@ function createSidebarElement(index, placemarkObject) {
 
     // Create title content
     var titleContent = document.createTextNode(placemarkObject.name);
+
+    // Create type icon
+    var iconClassName = '';
+    switch (placemarkObject.type) {
+        case 'car':
+            iconClassName = 'fas fa-car';
+            break;
+        case 'portable_radio':
+            iconClassName = 'fas fa-mobile';
+            break;
+    }
+
+    /* If icon class name is not empty; If not create icon element */
+    if (iconClassName != '') {
+        iElement = document.createElement('i');
+        iElement.className = iconClassName;
+        titleElement.appendChild(iElement);
+    }
+
+    // Apply text
     titleElement.appendChild(titleContent);
+
+    // Create type content
+    var typeContent = null;
+    switch (placemarkObject.type) {
+        case 'car':
+            typeContent = document.createTextNode('Type: Car' );
+            break;
+        case 'portable_radio':
+            typeContent = document.createTextNode('Type: Portable radio');
+            break;
+        case 'rib_boat':
+            typeContent = document.createTextNode('Type: Rib boat');
+            break;
+        case 'water_scooter':
+            typeContent = document.createTextNode('Type: Water scooter');
+            break;
+    }
+
+    // Check if tpye content is not NULL
+    if (typeContent != null) {
+         // Create type element
+        var typeElement = document.createElement('div');
+        typeElement.className = 'type';
+        typeElement.appendChild(typeContent);
+    }
 
     // Create location element
     var locationElement = document.createElement('div');
