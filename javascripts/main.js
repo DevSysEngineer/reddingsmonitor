@@ -412,16 +412,16 @@ function createSidebarElement(index, placemarkObject) {
     var typeContent = null;
     switch (placemarkObject.type) {
         case 'car':
-            typeContent = document.createTextNode('Car');
+            typeContent = document.createTextNode('Auto');
             break;
         case 'radio_portable':
-            typeContent = document.createTextNode('Portable radio');
+            typeContent = document.createTextNode('Portofoon');
             break;
         case 'boat_rib':
-            typeContent = document.createTextNode('Rib boat');
+            typeContent = document.createTextNode('Rib boot');
             break;
         case 'water_scooter':
-            typeContent = document.createTextNode('Water scooter');
+            typeContent = document.createTextNode('Waterscooter');
             break;
     }
 
