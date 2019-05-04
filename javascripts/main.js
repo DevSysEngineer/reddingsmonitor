@@ -633,6 +633,7 @@ function loadRemoteData() {
                         var gpsPlacemarkObject = {
                             id: 'gps',
                             name: 'Mijn locatie',
+                            type: 'unknown',
                             description: '',
                             updateTime: new Date().getTime(),
                             centerCoordinate: {
