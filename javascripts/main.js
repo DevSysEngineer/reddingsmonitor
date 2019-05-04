@@ -414,10 +414,10 @@ function createSidebarElement(index, placemarkObject) {
         case 'car':
             typeContent = document.createTextNode('Car');
             break;
-        case 'portable_radio':
+        case 'radio_portable':
             typeContent = document.createTextNode('Portable radio');
             break;
-        case 'rib_boat':
+        case 'boat_rib':
             typeContent = document.createTextNode('Rib boat');
             break;
         case 'water_scooter':
