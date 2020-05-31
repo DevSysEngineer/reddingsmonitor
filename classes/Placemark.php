@@ -43,9 +43,9 @@ class Placemark {
                 $this->_type = self::TYPE_CAR;
             } elseif (in_array($type, ['portofoon'])) {
                 $this->_type = self::TYPE_RADIO_PORTABLE;
-            } elseif (in_array($type, ['rib'])) {
+            } elseif (in_array($type, ['rib', 'boot'])) {
                 $this->_type = self::TYPE_BOAT_RIB;
-            } elseif (in_array($type, ['rwc'])) {
+            } elseif (in_array($type, ['rwc', 'waterscooter'])) {
                 $this->_type = self::TPYE_WATER_SCOOTER;
             }
 

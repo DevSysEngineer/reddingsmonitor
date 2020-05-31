@@ -119,6 +119,9 @@ function definePopupClass() {
             case 'boat_rib':
                 iconClassName = 'fas fa-ship';
                 break;
+             case 'water_scooter':
+                iconClassName = 'fas fa-tachometer-alt';
+                break;
         }
 
         // If icon class name is not empty; If not create icon element
