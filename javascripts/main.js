@@ -552,7 +552,7 @@ function createPlacemarkerMarker(placemarkObject) {
     placemarkMapObjects.push(popup);
 }
 
-function updateLayout(listElement) {
+function updateLayout(listElement, minutesDiff) {
     // Create sidebar elements
     for (var i = 0; i < placemarkObjects.length; i++) {
         // Get placemarkobject
@@ -566,13 +566,19 @@ function updateLayout(listElement) {
         createPlacemarkerMarker(placemarkObject);
     }
 
-    // Get current date
-    var date = new Date();
-    var n = date.toDateString();
-    var time = date.toLocaleTimeString();
+    // Check if minutes diff is to high
+    if (minutesDiff < 10) {
+        // Get current date
+        var date = new Date();
+        var n = date.toDateString();
+        var time = date.toLocaleTimeString();
 
-    // Set date information
-    document.getElementById('lastupdate').innerHTML = 'Laatst bijgewekt: ' + n + ' ' + time;
+        // Set date information
+        document.getElementById('lastupdate').innerHTML = 'Laatst bijgewerkt: ' + n + ' ' + time;
+    } else {
+        // Set some text
+        document.getElementById('lastupdate').innerHTML = 'Please restart GPS server';
+    }
 
     // Ready
     stopRequest = false;
@@ -625,14 +631,14 @@ function loadRemoteData() {
                                 placemarkObjects.unshift(gpsPlacemarkObject);
 
                                 // Update layout with GPS location
-                                updateLayout(listElement);
+                                updateLayout(listElement, jsonResponse.minutesDiff);
                             }, function() {
                                 // Error by retrieving GPS location
-                                updateLayout(listElement);
+                                updateLayout(listElement, jsonResponse.minutesDiff);
                             });
                         } else {
                             // No GPS location
-                            updateLayout(listElement);
+                            updateLayout(listElement, jsonResponse.minutesDiff);
                         }
                     } else {
                         // Create placemark
@@ -653,7 +659,7 @@ function loadRemoteData() {
                         placemarkObjects.unshift(gpsPlacemarkObject);
 
                         // Update layout with GPS location
-                        updateLayout(listElement);
+                        updateLayout(listElement, jsonResponse.minutesDiff);
                     }
                 }
             } else {

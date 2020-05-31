@@ -84,8 +84,6 @@ html, body {
     background: #474747;
     border-left: 1px solid #000;
     width: 20%;
-}
-#list ul {
     overflow: auto;
 }
 #list li a {
