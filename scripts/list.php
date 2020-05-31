@@ -27,8 +27,8 @@ try {
     }
 
     /* Get diff in minutes */
-    $nowDateTime = new DateTime('now');
-    $fileDateTime = new DateTime('now');
+    $nowDateTime = new \DateTime('now');
+    $fileDateTime = new \DateTime('now');
     $fileDateTime->setTimestamp($modifyTime);
     $minutesDiff = abs($nowDateTime->getTimestamp() - $fileDateTime->getTimestamp());
     if ($minutesDiff > 0) {
