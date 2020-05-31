@@ -130,3 +130,6 @@ html, body {
 .fas {
     padding-right: 5px;
 }
+.error {
+    color: red;
+}

@@ -572,6 +572,9 @@ function updateLayout(listElement, minutesDiff) {
         createPlacemarkerMarker(placemarkObject);
     }
 
+    // Get last update element
+    var lastUpdateElement = document.getElementById('lastupdate');
+
     // Check if minutes diff is to high
     if (minutesDiff < 10) {
         // Get current date
@@ -580,10 +583,12 @@ function updateLayout(listElement, minutesDiff) {
         var time = date.toLocaleTimeString();
 
         // Set date information
-        document.getElementById('lastupdate').innerHTML = 'Laatst bijgewerkt: ' + n + ' ' + time;
+        lastUpdateElement.innerHTML = 'Laatst bijgewerkt: ' + n + ' ' + time;
+        lastUpdateElement.className = '';
     } else {
         // Set some text
-        document.getElementById('lastupdate').innerHTML = 'Please restart GPS server';
+        lastUpdateElement.innerHTML = 'Please restart GPS server';
+        lastUpdateElement.className = 'error';
     }
 
     // Ready
