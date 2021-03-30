@@ -4,10 +4,13 @@ namespace Reddingsmonitor\Scripts;
 
 use Reddingsmonitor\Classes;
 
+/* Set dir */
+chdir(__DIR__);
+
 try {
     /* Require some files */
-    require_once 'load.php';
-    require_once '../classes/Placemark.php';
+    require_once '../load.php';
+    require_once '../../classes/Placemark.php';
 
     /* Check if file not eixts */
     $location = $config->getKMLLocation();

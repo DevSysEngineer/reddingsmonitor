@@ -4,9 +4,12 @@ namespace Reddingsmonitor\Scripts;
 
 use MatthiasMullie\Minify;
 
+/* Set dir */
+chdir(__DIR__);
+
 try {
     /* Require load */
-    require_once 'load.php';
+    require_once '../load.php';
 
     /* Create replace array */
     $replace = [

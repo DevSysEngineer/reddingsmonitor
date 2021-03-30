@@ -2,6 +2,9 @@
 
 namespace Reddingsmonitor;
 
+/* Set dir */
+chdir(__DIR__);
+
 try {
     /* Require load */
     require_once 'load.php';
