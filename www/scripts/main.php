@@ -18,7 +18,7 @@ try {
     $mainFile = $config->getFilesDir('main.js');
     if (!file_exists($mainFile)) {
         /* Minifier current javascript file */
-        $minifier = new Minify\JS('../javascripts/main.js');
+        $minifier = new Minify\JS('../../javascripts/main.js');
         $content = $minifier->minify();
 
         /* Write minifier output to file */
