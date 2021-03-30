@@ -2,6 +2,8 @@
 
 namespace Reddingsmonitor\Classes;
 
+use Exception;
+
 class Config {
 
     protected $_url = '';
@@ -17,7 +19,7 @@ class Config {
         $tempDir = sys_get_temp_dir();
         $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor' . DIRECTORY_SEPARATOR . 'files';
         if (!is_dir($fullDir) && !mkdir($fullDir, 755, TRUE)) {
-            throw new \Exception('Failed to create temp dir');
+            throw new Exception('Failed to create temp dir');
         }
 
         /* Set files dir */
@@ -31,7 +33,7 @@ class Config {
     public function setKMLLocation(string $location) {
         /* Check if path is not readable */
         if (!is_readable($location)) {
-            throw new \Exception('Path is not readable');
+            throw new Exception('Path is not readable');
         }
 
         /* Set location */

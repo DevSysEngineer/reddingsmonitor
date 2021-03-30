@@ -9,12 +9,13 @@ chdir(__DIR__);
 
 try {
     /* Require load */
+    $rootPath = '../../';
     require_once '../load.php';
 
     /* Create replace array */
     $replace = [
         '%refreshSeconds%' => ($config->getRefreshSeconds() * 1000),
-        '%scriptMain%' => $config->createScriptURL($_GET["token"], 'list')
+        '%scriptMain%' => $config->createScriptURL($_GET['token'], 'list')
     ];
 
     /* Check if main file not exists */

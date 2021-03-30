@@ -7,6 +7,7 @@ chdir(__DIR__);
 
 try {
     /* Require load */
+    $rootPath = '../../';
     require_once '../load.php';
 
     /* Check if config variable not exists */

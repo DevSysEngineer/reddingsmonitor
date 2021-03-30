@@ -9,6 +9,7 @@ chdir(__DIR__);
 
 try {
     /* Require some files */
+    $rootPath = '../../';
     require_once '../load.php';
     require_once '../../classes/Placemark.php';
 
