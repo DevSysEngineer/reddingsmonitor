@@ -9,8 +9,7 @@ chdir(__DIR__);
 
 try {
     /* Require load */
-    $rootPath = '../../';
-    require_once '../load.php';
+    require_once 'load.php';
 
     /* Create replace array */
     $replace = [
