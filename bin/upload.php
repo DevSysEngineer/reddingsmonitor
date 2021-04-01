@@ -199,12 +199,19 @@ while(TRUE) {
         /* Try to upload file */
         $post = ['kml'=> curl_file_create($filename)];
         if (!$upload->sendFile($token, $post)) {
-            /* Error */
+            /* Set correct values */
             $index++;
             $modifyTime = 0;
 
+            /* Show error */
+            if ($index >= 5) {
+                $upload->log('Failed to upload file');
+            }
+
             /* Sleep for 10 seconds */
             sleep(10);
+        } else {
+            $index = 0;
         }
     } while ($index < 5);
 }
