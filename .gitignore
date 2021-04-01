@@ -2,3 +2,4 @@
 /configs/config.php
 /vendor/
 *.kml
+*.log

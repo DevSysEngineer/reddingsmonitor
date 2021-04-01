@@ -9,10 +9,16 @@ class Auth {
 
     protected $_path = '';
 
-    public function __construct() {
+    public function __construct(string $prefixName = '') {
         /* Create temp dir */
         $tempDir = sys_get_temp_dir();
-        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor' . DIRECTORY_SEPARATOR . 'sessions';
+        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor';
+        if ($prefixName !== '') {
+            $fullDir .= DIRECTORY_SEPARATOR . $prefixName;
+        }
+
+        /* Add last part of the full dir */
+        $fullDir .= DIRECTORY_SEPARATOR . 'sessions';
         if (!is_dir($fullDir) && !mkdir($fullDir, 755, TRUE)) {
             throw new \Exception('Failed to create temp dir');
         }
@@ -62,5 +68,4 @@ class Auth {
     }
 }
 
-
-$auth = new Auth;
+$auth = new Auth(empty($prefixName) ? '' : $prefixName);

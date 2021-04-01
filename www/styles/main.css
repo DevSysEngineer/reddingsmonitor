@@ -62,6 +62,9 @@ html, body {
     font-size:  10px;
     color: #bfbfbf;
 }
+#lastupdate.error {
+    color: red;
+}
 #lastupdate, #dark-mode {
     text-align: right;
     padding-right: 10px;
@@ -129,7 +132,4 @@ html, body {
 }
 .fas {
     padding-right: 5px;
-}
-.error {
-    color: red;
 }

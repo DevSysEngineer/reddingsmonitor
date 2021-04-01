@@ -13,11 +13,19 @@ class Config {
     protected $_googleMapsAPIKey = NULL;
     protected $_refreshSeconds = 30;
     protected $_filesDir = NULL;
+    protected $_title = 'Reddingsmonitor';
 
-    public function __construct() {
+    public function __construct(string $prefixName = '') {
         /* Create temp dir */
         $tempDir = sys_get_temp_dir();
-        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor' . DIRECTORY_SEPARATOR . 'files';
+        $fullDir = $tempDir . DIRECTORY_SEPARATOR . 'reddingsmonitor';
+        if ($prefixName !== '') {
+            $fullDir .= DIRECTORY_SEPARATOR . $prefixName;
+            $this->_title = ucfirst($prefixName) . ' - ' . $this->_title;
+        }
+
+        /* Add last part of the full dir */
+        $fullDir .= DIRECTORY_SEPARATOR . 'files';
         if (!is_dir($fullDir) && !mkdir($fullDir, 755, TRUE)) {
             throw new Exception('Failed to create temp dir');
         }
@@ -102,6 +110,10 @@ class Config {
     public function createScriptURL(string $token, string $id = 'main') : string {
         return $this->_url . '/scripts/' . $id . '.php?secretkey=' . $this->_key . '&token=' . $token;
     }
+
+    public function getTitle() {
+        return $this->_title;
+    }
 }
 
-$config = new Config;
+$config = new Config(empty($prefixName) ? '' : $prefixName);
