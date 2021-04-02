@@ -1,52 +1,29 @@
+# Reddingsmonitor
+The Reddingsmonitor is a project set up in collaboration with the Zandvoort rescue brigade.
 
-## Require packages
-```
-sudo apt-get install php7.0-fpm php7.0-dom
-```
+## Installing upload script on Windows
 
-## PHP-FPM Pool settings
-```
-[www]
-user = www-data
-group = www-data
-listen = 127.0.0.1:9000;
-listen.owner = www-data
-listen.group = www-data
-pm = dynamic
-pm.max_children = 100
-pm.start_servers = 20
-pm.min_spare_servers = 10
-pm.max_spare_servers = 20
-pm.process_idle_timeout = 10s
-pm.max_requests = 0
-```
-
-## Composer install
-```
-sudo php /home/reddingsmonitor/composer.phar install --no-plugins --no-scripts
-```
-
-## Sudoers services file
-```
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service ssh *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service mysql *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service php7.0-fpm *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service nginx *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service cron *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service atd *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service rsyslog *
-%sudo   ALL=(ALL) NOPASSWD: /usr/sbin/service anacron *
-```
-
-## Autostart script
-```
-#!/bin/bash
-sudo service rsyslog start
-sudo service ssh start
-sudo service mysql start
-sudo service php7.0-fpm start
-sudo service nginx start
-sudo service cron start
-sudo service atd start
-sudo service anacron start
-```
+### Install WSL 2.
+* Open Apps & Features
+* Open Programs and Features
+* Open Turn Windows features on or off menu
+* Enable Windows Subsystem for Linux
+* Press OK and reboot your system
+* Open the Microsoft Store Page and install Debian
+* Open Debian by pressing CNTRL + R, type Debian and hit enter.
+* Follow install instructions
+* Close installation window
+* Open PowerShell (Run as Administrator)
+* Set WSL 2 as default
+* wsl --set-default-version 2
+* Run package manager on WSL. ```bash sudo apt-get update && apt-get dist-upgrade```
+* Install extra packages on WSL. ```bash sudo apt-get install php-cli php-curl```
+* Deploy https://github.com/KvanSteijn/reddingsmonitor in a folder on your system.
+* We need to create a new logon task in the windows task scheduler so that upload will start when at logon.
+* Open the windows task scheduler. Not task manager, but task scheduler.
+* In the top right click 'create task'.
+* Fill in a task name. For example 'Reddingsmonitor upload'.
+* At the top, click on the tab 'Triggers'.
+* Create a new trigger, and in the dropdown menu at the top begin the task 'At log on'. Click ok.
+* At the top, click on the tab 'Actions'.
+* In the windows task scheduler, add a new logon task. With script wsl and arguments ```bash bash -c "nohup php /mnt/c/Users/{NAME}/Desktop/Reddingsmonitor/bin/upload.php > /dev/null 2>&1 &"```. Replace the {USER} path with the path to upload.php on your pc. This will automatically start uploading when you log into windows. Make sure the path starts with /mnt/c/ and not C:.
