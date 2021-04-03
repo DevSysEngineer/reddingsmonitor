@@ -38,7 +38,7 @@ try {
     $xmlPreviousValue = libxml_use_internal_errors(TRUE);
 
     /* Load XML */
-    $dom = new \DOMDocument;
+    $dom = new DOMDocument;
     $result = $dom->loadXML($content);
 
     /* Reset values */
