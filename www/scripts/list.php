@@ -43,20 +43,29 @@ try {
     $object->payload = [];
     $object->minutesDiff = $minutesDiff;
 
-    /* Load XML */
-    $dom = new \DOMDocument;
-    $result = $dom->loadXML($content);
-    if ($result === NULL) {
-        header('HTTP/1.0 500 Internal Server Error');
-        exit;
-    }
+    /* Check if the content is not FALSE */
+    if ($content !== FALSE) {
+        /* Set XML settings */
+        $xmlPreviousValue = libxml_use_internal_errors(TRUE);
 
-    /* Get placemaks */
-    $placemarkElements = $dom->getElementsByTagName('Placemark');
-    foreach ($placemarkElements as $placemarkElement) {
-        $placemarkObj = new Classes\Placemark($placemarkElement);
-        if ($placemarkObj->isValid()) {
-            $object->payload[] = $placemarkObj->toStdClass();
+        /* Load XML */
+        $dom = new \DOMDocument;
+        $result = $dom->loadXML($content);
+
+        /* Reset values */
+        libxml_clear_errors();
+        libxml_use_internal_errors($xmlPreviousValue);
+
+        /* Check result */
+        if ($result !== NULL) {
+            /* Get placemaks */
+            $placemarkElements = $dom->getElementsByTagName('Placemark');
+            foreach ($placemarkElements as $placemarkElement) {
+                $placemarkObj = new Classes\Placemark($placemarkElement);
+                if ($placemarkObj->isValid()) {
+                    $object->payload[] = $placemarkObj->toStdClass();
+                }
+            }
         }
     }
 

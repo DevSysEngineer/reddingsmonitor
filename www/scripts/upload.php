@@ -28,9 +28,25 @@ try {
         exit;
     }
 
-    /* Try to load file */
-    $dom = new DOMDocument;
-    if (!$dom->load($_FILES['kml']['tmp_name'])) {
+    /* Get KML content */
+    $content = file_get_contents($_FILES['kml']['tmp_name']);
+    if ($content === FALSE) {
+        exit('FAILED');
+    }
+
+    /* Set XML settings */
+    $xmlPreviousValue = libxml_use_internal_errors(TRUE);
+
+    /* Load XML */
+    $dom = new \DOMDocument;
+    $result = $dom->loadXML($content);
+
+    /* Reset values */
+    libxml_clear_errors();
+    libxml_use_internal_errors($xmlPreviousValue);
+
+    /* Check result */
+    if ($result === NULL) {
         exit('FAILED');
     }
 

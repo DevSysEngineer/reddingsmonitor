@@ -27,7 +27,6 @@ The Reddingsmonitor is a project set up in collaboration with the Zandvoort resc
 * Create a new trigger, and in the dropdown menu at the top begin the task 'At log on'. Click ok.
 * At the top, click on the tab 'Actions'.
 * In the windows task scheduler, add a new logon task. With script ```wsl``` and arguments.
-
 ```shell
 bash -c "nohup php /mnt/c/Users/{NAME}/Desktop/Reddingsmonitor/bin/upload.php > /dev/null 2>&1 &"
 ```
