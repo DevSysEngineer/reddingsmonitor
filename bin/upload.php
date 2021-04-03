@@ -2,6 +2,8 @@
 
 namespace Reddingsmonitor\Bin;
 
+use DOMDocument;
+
 /* Set dir */
 chdir(__DIR__);
 
@@ -76,6 +78,34 @@ class Upload {
 
         /* Return token */
         return trim($result);
+    }
+
+    public function checkFile(string $filename) : bool {
+        /* Get KML content */
+        $content = file_get_contents($filename);
+        if ($content === FALSE) {
+            return FALSE;
+        }
+
+        /* Set XML settings */
+        $xmlPreviousValue = libxml_use_internal_errors(TRUE);
+
+        /* Load XML */
+        $dom = new DOMDocument;
+        $result = $dom->loadXML($content);
+
+        /* Reset values */
+        libxml_clear_errors();
+        libxml_use_internal_errors($xmlPreviousValue);
+
+        /* Check if XML is valid */
+        if ($result === NULL) {
+            return FALSE; 
+        }
+
+        /* Check if we have elements */
+        $elements = $dom->getElementsByTagName('Document');
+        return !empty($elements);
     }
 
     public function sendFile(string $token, array $post) : bool {
@@ -178,14 +208,24 @@ while(TRUE) {
     $token = $upload->getToken();
     do {
         /* Check if file exists */
+        $fileIndex = -1;
         $found = FALSE;
         do {
+            /* Update index */
+            $fileIndex++;
+
+            /* Clear stats */
             clearstatcache(TRUE);
+
+            /* Check if file exists */
             if (file_exists($filename)) {
+                /* Check if the file is changed */
                 $fileTime = filemtime($filename);
                 if ($fileTime !== NULL && $fileTime > $modifyTime) {
-                    $modifyTime = $fileTime;
-                    $found = TRUE;
+                    if ($upload->checkFile($filename)) {
+                        $modifyTime = $fileTime;
+                        $found = TRUE;
+                    }
                 }
             } else {
                 /* Create log */
@@ -195,6 +235,11 @@ while(TRUE) {
                 sleep(10);
             }
         } while (!$found);
+
+        /* Request for new token when duration of file takes to long */
+        if ($fileIndex >= 5) {
+            $token = $upload->getToken();
+        }
 
         /* Try to upload file */
         $post = ['kml'=> curl_file_create($filename)];
