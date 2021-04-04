@@ -801,7 +801,6 @@ function loadRemoteData() {
                         var minutesDiff = parseFloat(jsonResponse.minutesDiff);
                         if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
                             reject(minutesDiff);
-                            return;
                         } else if (lastKnownHash === jsonResponse.md5) {
                             reject(minutesDiff);
                         } else {
@@ -854,12 +853,10 @@ function loadRemoteData() {
                 }
                 resolve();
             }));
-        } else {
-            promises.push(new Promise(resolve => {
-                resolve(true);
-            }));
-            console.log('smartUpdate is active');
         }
+
+        // Create some log
+        console.log('New data');
 
         // Clear data
         return Promise.all(promises).then(function() {
