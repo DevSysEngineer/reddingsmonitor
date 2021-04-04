@@ -695,6 +695,7 @@ function updateLayout(selectElement, listElement, minutesDiff) {
 
         // Add markers
         for (var i = 0; i < placemarkObjects.length; i++) {
+            var placemarkObject = placemarkObjects[i];
             promises.push(createPlacemarkerMarker(placemarkObject));
         }
 
