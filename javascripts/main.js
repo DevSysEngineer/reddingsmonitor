@@ -758,87 +758,94 @@ function loadRemoteData() {
         };
         xhttp.send();
     }).then(values => {
-        console.log('TEST2');
+        // Create list
+        var promises = []
 
-        // Get element by id and remove old childs
-        var selectElement = document.getElementById('select-follow-mode');
-        while (selectElement.firstChild) {
-            selectElement.removeChild(selectElement.firstChild);
-        }
+        // Remove old values
+        promises.push(new Promise(resolve => {
+            var selectElement = document.getElementById('select-follow-mode');
+            while (selectElement.firstChild) {
+                selectElement.removeChild(selectElement.firstChild);
+            }
+            resolve();
+        }));
 
-        // Get element by id and remove old childs
-        var listElement = document.getElementById('list');
-        while (listElement.firstChild) {
-            listElement.removeChild(listElement.firstChild);
-        }
+        // Remove old values
+        promises.push(new Promise(resolve => {
+            var listElement = document.getElementById('list');
+            while (listElement.firstChild) {
+                listElement.removeChild(listElement.firstChild);
+            }
+            resolve();
+        }));
 
-        // Remove place makers
-        removePlacemarkers().then(function() {
-            // Set response payload
-            minutesDiff = values[0];
-            placemarkObjects = values[1];
+        // Clear data
+        return Promise.all(promises).then(function() {
+            return removePlacemarkers().then(function() {
+                // Set response payload
+                minutesDiff = values[0];
+                placemarkObjects = values[1];
 
-            // Check if gps location is null
-            if (gpsLocation === null) {
-                // Check if GPS location is enabled
-                if (hasGPSLocation) {
-                    // Try to get GPS location of current device
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        // Create placemark
-                        var gpsPlacemarkObject = {
-                            id: 'gps',
-                            name: activeLanguage.textObject.myLocation,
-                            description: '',
-                            updateTime: new Date().getTime(),
-                            centerCoordinate: {
-                                lng: position.coords.longitude,
-                                lat: position.coords.latitude,
-                                alt: 0
-                            }
-                        };
+                // Check if gps location is null
+                if (gpsLocation === null) {
+                    // Check if GPS location is enabled
+                    if (hasGPSLocation) {
+                        // Try to get GPS location of current device
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            // Create placemark
+                            var gpsPlacemarkObject = {
+                                id: 'gps',
+                                name: activeLanguage.textObject.myLocation,
+                                description: '',
+                                updateTime: new Date().getTime(),
+                                centerCoordinate: {
+                                    lng: position.coords.longitude,
+                                    lat: position.coords.latitude,
+                                    alt: 0
+                                }
+                            };
 
-                        // Add GPS placemark
-                        placemarkObjects.unshift(gpsPlacemarkObject);
+                            // Add GPS placemark
+                            placemarkObjects.unshift(gpsPlacemarkObject);
 
-                        // Update layout with GPS location
+                            // Update layout with GPS location
+                            updateLayout(selectElement, listElement, minutesDiff);
+                        }, function() {
+                            // Error by retrieving GPS location
+                            updateLayout(selectElement, listElement, minutesDiff);
+                        });
+                    } else {
+                        // No GPS location
                         updateLayout(selectElement, listElement, minutesDiff);
-                    }, function() {
-                        // Error by retrieving GPS location
-                        updateLayout(selectElement, listElement, minutesDiff);
-                    });
+                    }
                 } else {
-                    // No GPS location
+                    // Create placemark
+                    var gpsPlacemarkObject = {
+                        id: 'gps',
+                        name: activeLanguage.textObject.myLocation,
+                        type: 'unknown',
+                        description: '',
+                        updateTime: new Date().getTime(),
+                        centerCoordinate: {
+                            lng: gpsLocation.lng,
+                            lat: gpsLocation.lat,
+                            alt: 0
+                        }
+                    };
+
+                    // Add GPS placemark
+                    placemarkObjects.unshift(gpsPlacemarkObject);
+
+                    // Update layout with GPS location
                     updateLayout(selectElement, listElement, minutesDiff);
                 }
-            } else {
-                // Create placemark
-                var gpsPlacemarkObject = {
-                    id: 'gps',
-                    name: activeLanguage.textObject.myLocation,
-                    type: 'unknown',
-                    description: '',
-                    updateTime: new Date().getTime(),
-                    centerCoordinate: {
-                        lng: gpsLocation.lng,
-                        lat: gpsLocation.lat,
-                        alt: 0
-                    }
-                };
-
-                // Add GPS placemark
-                placemarkObjects.unshift(gpsPlacemarkObject);
-
-                // Update layout with GPS location
-                updateLayout(selectElement, listElement, minutesDiff);
-            }
+            });
         });
     }).catch(error => {
-        console.log(error);
-
-        stopRequest = false;
         if (error >= 0) {
             updateDate(error);
         }
+        return true;
     });
 }
 
