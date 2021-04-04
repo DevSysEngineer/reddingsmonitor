@@ -357,6 +357,11 @@ function triggerFollowMode(index) {
     // Set folloow
     activeFollow = index;
 
+    // Check if user has local storage and if possible store data
+    if (hasLocalStorage) {
+        localStorage.setItem('activeFollow', activeFollow);
+    }
+
     // Do nothing when acitive follow is none
     if (activeFollow === 'none') {
         return;
@@ -612,14 +617,21 @@ function updateLayout(selectElement, listElement, minutesDiff) {
     selectElement.appendChild(optionElement);
 
     /* Move to center */
+    var foundFollow = false;
     if (activeFollow !== 'none') {
         for (var i = 0; i < placemarkObjects.length; i++) {
             var placemarkObject = placemarkObjects[i];
             if (placemarkObject.id === activeFollow) {
+                // We found the follow
+                foundFollow = true;
+
+                // Update maps
                 var centerCoordinate = placemarkObject.centerCoordinate;
                 map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
             }
         }
+    } else {
+        foundFollow = true;
     }
 
     // Create sidebar elements
@@ -643,6 +655,18 @@ function updateLayout(selectElement, listElement, minutesDiff) {
 
         // Create placemark
         createPlacemarkerMarker(placemarkObject);
+    }
+
+    /* It cam be that active follow not exists anymore */
+    if (!foundFollow) {
+        // Reset values
+        selectElement.value = 'none';
+        activeFollow = 'none';
+
+        // Check if user has local storage and if possible store data
+        if (hasLocalStorage) {
+            localStorage.setItem('activeFollow', 'none');
+        }
     }
 
     // Update date
@@ -786,6 +810,12 @@ function initMap() {
 
     // Check if user has local storage
     if (hasLocalStorage) {
+        // Check if active follow storage exists
+        var activeFollowStorage = localStorage.getItem('activeFollow');
+        if (activeFollowStorage !== null) {
+            activeFollow = activeFollowStorage
+        }
+
         // Check if dark mode storage exists
         var darkModeStorage = localStorage.getItem('darkMode');
         if (darkModeStorage !== null) {
