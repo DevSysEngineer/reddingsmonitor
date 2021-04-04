@@ -65,9 +65,11 @@ html, body {
 #lastupdate.error {
     color: red;
 }
-#lastupdate, #settings {
-    text-align: right;
+#lastupdate, #settings * {
     padding-right: 10px;
+}
+#lastupdate, #settings  {
+    text-align: right;
 }
 #content {
     width: 100%;
@@ -96,7 +98,7 @@ html, body {
     display: block;
     font-size: 16px;
 }
-#list li a, #list li  a * {
+#list li a, #list li a * {
     cursor: pointer;
 }
 .popup-tip-anchor, .popup-bubble-anchor, .popup-bubble-anchor::after, .popup-bubble-content {
