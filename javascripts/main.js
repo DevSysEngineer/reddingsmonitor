@@ -547,98 +547,95 @@ function createSidebarElement(index, placemarkObject) {
 }
 
 function createPlacemarkerMarker(placemarkObject) {
-    // Get center coordinate
-    var centerCoordinate = placemarkObject.centerCoordinate;
+    return new Promise(function (resolve, reject) {
+        // Get center coordinate
+        var centerCoordinate = placemarkObject.centerCoordinate;
 
-    // Get draggable state
-    var draggable = false;
-    if (placemarkObject.id == 'gps') {
-        draggable = true;
-    }
+        // Get draggable state
+        var draggable = false;
+        if (placemarkObject.id == 'gps') {
+            draggable = true;
+        }
 
-    // Create marker
-    var popup = new Popup(
-        placemarkObject.id,
-        new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
-        placemarkObject.name,
-        placemarkObject.type,
-        draggable,
-        getMapClassName(),
-    );
+        // Create marker
+        var popup = new Popup(
+            placemarkObject.id,
+            new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng),
+            placemarkObject.name,
+            placemarkObject.type,
+            draggable,
+            getMapClassName(),
+        );
 
-    // Set map
-    popup.setMap(map);
+        // Set map
+        popup.setMap(map);
 
-    // Check if popup is draggable
-    if (draggable) {
-        // Add event listener for draggable place marker
-        google.maps.event.addDomListener(popup.getAnchor(), 'mousedown', function(e) {
-            isPlacemarkDragging = true;
-        });
+        // Check if popup is draggable
+        if (draggable) {
+            // Add event listener for draggable place marker
+            google.maps.event.addDomListener(popup.getAnchor(), 'mousedown', function(e) {
+                isPlacemarkDragging = true;
+            });
 
-        // Add event listener for draggable place marker
-        google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
-            // Search for placemark object
-            var date = new Date();
-            var coordinate = { lng: -1, lat: -1 };
-            for (var i = 0; i < placemarkMapObjects.length; i++) {
-                if (placemarkMapObjects[i].getId() == this.id) {
-                    var position = placemarkMapObjects[i].getPosition();
-                    coordinate.lng = position.lng();
-                    coordinate.lat = position.lat();
-                    break;
-                }
-            }
-
-            // Set local storage data
-            if (hasLocalStorage) {
-                localStorage.setItem(this.id + 'Lng', coordinate.lng);
-                localStorage.setItem(this.id + 'Lat', coordinate.lat);
-            }
-
-            // Check if id is GPS; If yes, update GPS location
-            if (this.id == 'gps') {
-                gpsLocation = (coordinate.lng >= 0 && coordinate.lat >= 0) ? coordinate : null;
-            }
-
-            // Remove sidebar elements
-            var listElement = document.getElementById('list');
-            while (listElement.firstChild) {
-                listElement.removeChild(listElement.firstChild);
-            }
-
-            // Create sidebar elements
-            for (var i = 0; i < placemarkObjects.length; i++) {
-                // Search for object with same id and update some values
-                if (placemarkObjects[i].id == this.id) {
-                    placemarkObjects[i].updateTime = new Date().getTime();
-                    placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
-                    placemarkObjects[i].centerCoordinate.lat = coordinate.lat;
+            // Add event listener for draggable place marker
+            google.maps.event.addDomListener(popup.getAnchor(), 'mouseup', function(e) {
+                // Search for placemark object
+                var date = new Date();
+                var coordinate = { lng: -1, lat: -1 };
+                for (var i = 0; i < placemarkMapObjects.length; i++) {
+                    if (placemarkMapObjects[i].getId() == this.id) {
+                        var position = placemarkMapObjects[i].getPosition();
+                        coordinate.lng = position.lng();
+                        coordinate.lat = position.lat();
+                        break;
+                    }
                 }
 
-                // Create  li element
-                var liElement = createSidebarElement(i, placemarkObjects[i]);
-                listElement.appendChild(liElement);
-            }
+                // Set local storage data
+                if (hasLocalStorage) {
+                    localStorage.setItem(this.id + 'Lng', coordinate.lng);
+                    localStorage.setItem(this.id + 'Lat', coordinate.lat);
+                }
 
-            // Dragging is stopped
-            isPlacemarkDragging = false;
-        });
-    }
+                // Check if id is GPS; If yes, update GPS location
+                if (this.id == 'gps') {
+                    gpsLocation = (coordinate.lng >= 0 && coordinate.lat >= 0) ? coordinate : null;
+                }
 
-    // Add marker
-    placemarkMapObjects.push(popup);
+                // Remove sidebar elements
+                var listElement = document.getElementById('list');
+                while (listElement.firstChild) {
+                    listElement.removeChild(listElement.firstChild);
+                }
+
+                // Create sidebar elements
+                for (var i = 0; i < placemarkObjects.length; i++) {
+                    // Search for object with same id and update some values
+                    if (placemarkObjects[i].id == this.id) {
+                        placemarkObjects[i].updateTime = new Date().getTime();
+                        placemarkObjects[i].centerCoordinate.lng = coordinate.lng;
+                        placemarkObjects[i].centerCoordinate.lat = coordinate.lat;
+                    }
+
+                    // Create  li element
+                    var liElement = createSidebarElement(i, placemarkObjects[i]);
+                    listElement.appendChild(liElement);
+                }
+
+                // Dragging is stopped
+                isPlacemarkDragging = false;
+            });
+        }
+
+        // Add marker
+        placemarkMapObjects.push(popup);
+        resolve(popup);
+    });
 }
 
 function updateLayout(selectElement, listElement, minutesDiff) {
     return new Promise(function (resolve, reject) {
-         // Create option element
-        var optionElement = document.createElement('option');
-        optionElement.value = 'none';
-        optionElement.text = '--';
-        selectElement.appendChild(optionElement);
-
-        /* Move to center */
+        // Move to center
         var foundFollow = false;
         if (activeFollow !== 'none') {
             for (var i = 0; i < placemarkObjects.length; i++) {
@@ -656,44 +653,73 @@ function updateLayout(selectElement, listElement, minutesDiff) {
             foundFollow = true;
         }
 
-        // Create sidebar elements
-        for (var i = 0; i < placemarkObjects.length; i++) {
-            // Get placemarkobject
-            var placemarkObject = placemarkObjects[i];
+        // Retrun result
+        resolve(foundFollow);
+    }).then(foundFollow => {
+        // Create list
+        var promises = [];
 
-            // Add li element to list element
-            var liElement = createSidebarElement(i, placemarkObject);
-            listElement.appendChild(liElement);
-
-            // Add option element to list element
-            var optionElement = createOptionElement(i, placemarkObject);
+        // Add options
+        promises.push(new Promise(resolve => {
+            // Create option element
+            var optionElement = document.createElement('option');
+            optionElement.value = 'none';
+            optionElement.text = '--';
             selectElement.appendChild(optionElement);
 
-            /* Select active follow */
-            if (placemarkObject.id === activeFollow) {
-                // Set select active elemnt
-                selectElement.value = activeFollow;
+            // Add options based on placemarkObjects
+            for (var i = 0; i < placemarkObjects.length; i++) {
+                // Add option element to list element
+                var placemarkObject = placemarkObjects[i];
+                var optionElement = createOptionElement(i, placemarkObject);
+                selectElement.appendChild(optionElement);
+
+                /// Select active follow
+                if (placemarkObject.id === activeFollow) {
+                    selectElement.value = activeFollow;
+                }
             }
+            resolve();
+        }));
 
-            // Create placemark
-            createPlacemarkerMarker(placemarkObject);
-        }
-
-        /* It cam be that active follow not exists anymore */
-        if (!foundFollow) {
-            // Reset values
-            selectElement.value = 'none';
-            activeFollow = 'none';
-
-            // Check if user has local storage and if possible store data
-            if (hasLocalStorage) {
-                localStorage.setItem('activeFollow', 'none');
+        // Add list
+        promises.push(new Promise(resolve => {
+            for (var i = 0; i < placemarkObjects.length; i++) {
+                var placemarkObject = placemarkObjects[i];
+                var liElement = createSidebarElement(i, placemarkObject);
+                listElement.appendChild(liElement);    
             }
+            resolve();
+        }));
+
+
+        // Add markers
+        for (var i = 0; i < placemarkObjects.length; i++) {
+            promises.push(createPlacemarkerMarker(placemarkObject));
         }
 
         // Update date
-        updateDate(minutesDiff);
-        resolve(true);
+        promises.push(new Promise(resolve => {
+            resolve(updateDate(minutesDiff));
+        });
+
+        // Run all promise
+        return Promise.all(promises).then(function() {
+            // It cam be that active follow not exists anymore
+            if (!foundFollow) {
+                // Reset values
+                selectElement.value = 'none';
+                activeFollow = 'none';
+
+                // Check if user has local storage and if possible store data
+                if (hasLocalStorage) {
+                    localStorage.setItem('activeFollow', 'none');
+                }
+            }
+
+            // Success
+            return true;
+        });
     });
 }
 
@@ -719,6 +745,9 @@ function updateDate(minutesDiff) {
 
     // Update last know minutes diff
     lastKnownMinutesDiff = minutesDiff;
+
+    // Success
+    return true;
 }
 
 function loadRemoteData() {
@@ -735,8 +764,6 @@ function loadRemoteData() {
                     // Loop object
                     var jsonResponse = JSON.parse(this.responseText);
                     if (jsonResponse !== null) {
-                        console.log('TEST1');
-
                         // Check if data is chnaged
                         var minutesDiff = parseFloat(jsonResponse.minutesDiff);
                         if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
