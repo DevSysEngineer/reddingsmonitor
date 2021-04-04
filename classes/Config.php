@@ -11,7 +11,7 @@ class Config {
     protected $_key = NULL;
     protected $_whitelistIPs = [];
     protected $_googleMapsAPIKey = NULL;
-    protected $_refreshSeconds = 30;
+    protected $_refreshSeconds = 10;
     protected $_filesDir = NULL;
     protected $_title = 'Reddingsmonitor';
 

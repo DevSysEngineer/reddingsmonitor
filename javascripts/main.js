@@ -11,6 +11,7 @@ var mapTypeId = 'roadmap';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
+var lastKnowMinutesDiff = 0.0;
 var placemarkObjects = [];
 var placemarkMapObjects = [];
 var darkModeStyles = [
@@ -346,6 +347,10 @@ function triggerDarkMode(active) {
     }
 }
 
+function triggerFollowMode() {
+    
+}
+
 function removePlacemarkers() {
     // Remove placemakers
     for (var i = 0; i < placemarkMapObjects.length; i++) {
@@ -572,11 +577,19 @@ function updateLayout(listElement, minutesDiff) {
         createPlacemarkerMarker(placemarkObject);
     }
 
+    // Update date
+    updateDate(minutesDiff);
+
+    // Ready
+    stopRequest = false;
+}
+
+function updateDate(minutesDiff) {
     // Get last update element
     var lastUpdateElement = document.getElementById('lastupdate');
 
     // Check if minutes diff is to high
-    if (minutesDiff < 10) {
+    if (minutesDiff < 10.0) {
         // Get current date
         var date = new Date();
         var n = date.toDateString();
@@ -591,8 +604,8 @@ function updateLayout(listElement, minutesDiff) {
         lastUpdateElement.className = 'error';
     }
 
-    // Ready
-    stopRequest = false;
+    // Update last know minutes diff
+    lastKnowMinutesDiff = minutesDiff;
 }
 
 function loadRemoteData() {
@@ -607,6 +620,14 @@ function loadRemoteData() {
                 // Loop object
                 var jsonResponse = JSON.parse(this.responseText);
                 if (jsonResponse !== null) {
+                    // Check if data is chnaged
+                    var minutesDiff = parseFloat(jsonResponse.minutesDiff);
+                    if (lastKnowMinutesDiff !== 0.0 && minutesDiff >= lastKnowMinutesDiff) {
+                        updateDate(minutesDiff);
+                        stopRequest = false;
+                        return;
+                    }
+
                     // Get element by id and remove old childs
                     var listElement = document.getElementById('list');
                     while (listElement.firstChild) {
@@ -642,14 +663,14 @@ function loadRemoteData() {
                                 placemarkObjects.unshift(gpsPlacemarkObject);
 
                                 // Update layout with GPS location
-                                updateLayout(listElement, jsonResponse.minutesDiff);
+                                updateLayout(listElement, minutesDiff);
                             }, function() {
                                 // Error by retrieving GPS location
-                                updateLayout(listElement, jsonResponse.minutesDiff);
+                                updateLayout(listElement, minutesDiff);
                             });
                         } else {
                             // No GPS location
-                            updateLayout(listElement, jsonResponse.minutesDiff);
+                            updateLayout(listElement, minutesDiff);
                         }
                     } else {
                         // Create placemark
@@ -670,7 +691,7 @@ function loadRemoteData() {
                         placemarkObjects.unshift(gpsPlacemarkObject);
 
                         // Update layout with GPS location
-                        updateLayout(listElement, jsonResponse.minutesDiff);
+                        updateLayout(listElement, minutesDiff);
                     }
                 }
             } else {
