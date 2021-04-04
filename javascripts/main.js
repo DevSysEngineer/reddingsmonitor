@@ -1,5 +1,5 @@
 var map = null;
-var center = null
+var center = null;
 var gpsLocation = null;
 var zoom = 5;
 var stopRequest = false;
@@ -444,6 +444,14 @@ function createOptionElement(index, placemarkObject) {
     return optionElement;
 }
 
+function updateSidebarElement(index, placemarkObject, element) {
+    var locations = element.getElementsByClassName('location');
+    if (locations[0]) {
+        var centerCoordinate = placemarkObject.centerCoordinate;
+        locations[0].innerText = centerCoordinate.lat + ', ' + centerCoordinate.lng;
+    }
+}
+
 function createSidebarElement(index, placemarkObject) {
     // Create title element
     var titleElement = document.createElement('div');
@@ -514,7 +522,7 @@ function createSidebarElement(index, placemarkObject) {
 
     // Check if type content is not NULL
     if (typeContent != null) {
-         // Create type element
+        // Create type element
         var typeElement = document.createElement('div');
         typeElement.className = 'type';
         typeElement.appendChild(typeContent);
@@ -642,7 +650,7 @@ function createPlacemarkerMarker(placemarkObject) {
     });
 }
 
-function updateLayout(selectElement, listElement, minutesDiff) {
+function updateLayout(selectElement, listElement, minutesDiff, smartUpdate) {
     return new Promise(function (resolve, reject) {
         // Move to center
         var foundFollow = false;
@@ -668,39 +676,51 @@ function updateLayout(selectElement, listElement, minutesDiff) {
         // Create list
         var promises = [];
 
-        // Add options
-        promises.push(new Promise(resolve => {
-            // Create option element
-            var optionElement = document.createElement('option');
-            optionElement.value = 'none';
-            optionElement.text = '--';
-            selectElement.appendChild(optionElement);
-
-            // Add options based on placemarkObjects
-            for (var i = 0; i < placemarkObjects.length; i++) {
-                // Add option element to list element
-                var placemarkObject = placemarkObjects[i];
-                var optionElement = createOptionElement(i, placemarkObject);
+        // Add only options when smart update is false
+        if (!smartUpdate) {
+            promises.push(new Promise(resolve => {
+                // Create option element
+                var optionElement = document.createElement('option');
+                optionElement.value = 'none';
+                optionElement.text = '--';
                 selectElement.appendChild(optionElement);
 
-                /// Select active follow
-                if (placemarkObject.id === activeFollow) {
-                    selectElement.value = activeFollow;
+                // Add options based on placemarkObjects
+                for (var i = 0; i < placemarkObjects.length; i++) {
+                    // Add option element to list element
+                    var placemarkObject = placemarkObjects[i];
+                    var optionElement = createOptionElement(i, placemarkObject);
+                    selectElement.appendChild(optionElement);
+
+                    /// Select active follow
+                    if (placemarkObject.id === activeFollow) {
+                        selectElement.value = activeFollow;
+                    }
                 }
-            }
-            resolve();
-        }));
+                resolve();
+            }));
+        }
 
-        // Add list
-        promises.push(new Promise(resolve => {
-            for (var i = 0; i < placemarkObjects.length; i++) {
-                var placemarkObject = placemarkObjects[i];
-                var liElement = createSidebarElement(i, placemarkObject);
-                listElement.appendChild(liElement);    
-            }
-            resolve();
-        }));
-
+        // When smart update is active, update only the elements
+        if (smartUpdate) {
+            promises.push(new Promise(resolve => {
+                var childNodes = listElement.childNodes;
+                for (var i = 0; i < childNodes.length; i++) {
+                    var placemarkObject = placemarkObjects[i];
+                    updateSidebarElement(i, placemarkObject, childNodes.length[i]); 
+                }
+                resolve();
+            }));
+        } else {
+            promises.push(new Promise(resolve => {
+                for (var i = 0; i < placemarkObjects.length; i++) {
+                    var placemarkObject = placemarkObjects[i];
+                    var liElement = createSidebarElement(i, placemarkObject);
+                    listElement.appendChild(liElement);    
+                }
+                resolve();
+            }));
+        }
 
         // Add markers
         for (var i = 0; i < placemarkObjects.length; i++) {
@@ -801,21 +821,39 @@ function loadRemoteData() {
         var selectElement = document.getElementById('select-follow-mode');
         var listElement = document.getElementById('list');
 
-        // Remove old values
-        promises.push(new Promise(resolve => {
-            while (selectElement.firstChild) {
-                selectElement.removeChild(selectElement.firstChild);
+        // When we are using static position
+        var smartUpdate = true;
+        if (gpsLocation !== null) {
+            for (var i = 1; i < placemarkObjects.length; i++) { // Skip GPS
+                if (!value[i] || (value[i] && value[i].id !== placemarkObjects[i].id) ) {
+                    smartUpdate = false;
+                    break;
+                }
             }
-            resolve();
-        }));
+        } else {
+            smartUpdate = false;
+        }
 
-        // Remove old values
-        promises.push(new Promise(resolve => {
-            while (listElement.firstChild) {
-                listElement.removeChild(listElement.firstChild);
-            }
-            resolve();
-        }));
+        // Do only when smart update is not active
+        if (!smartUpdate) {
+            // Remove old values
+            promises.push(new Promise(resolve => {
+                while (selectElement.firstChild) {
+                    selectElement.removeChild(selectElement.firstChild);
+                }
+                resolve();
+            }));
+
+            // Remove old values
+            promises.push(new Promise(resolve => {
+                while (listElement.firstChild) {
+                    listElement.removeChild(listElement.firstChild);
+                }
+                resolve();
+            }));
+        } else {
+            console.log('smartUpdate is active');
+        }
 
         // Clear data
         return Promise.all(promises).then(function() {
@@ -824,63 +862,68 @@ function loadRemoteData() {
                 var minutesDiff = values[0];
                 placemarkObjects = values[1];
 
-                // Check if gps location is null
-                if (gpsLocation === null) {
-                    // Check if GPS location is enabled
-                    if (hasGPSLocation) {
-                        return new Promise(function (resolve, reject) {
-                            navigator.geolocation.getCurrentPosition(function (position) {
-                                resolve(position);
-                            }, function (err) {
-                                reject(err);
+                // Rebuild layout only when smart update is false
+                if (!smartUpdate) {
+                    // Check if gps location is null
+                    if (gpsLocation === null) {
+                        // Check if GPS location is enabled
+                        if (hasGPSLocation) {
+                            return new Promise(function (resolve, reject) {
+                                navigator.geolocation.getCurrentPosition(function (position) {
+                                    resolve(position);
+                                }, function (err) {
+                                    reject(err);
+                                });
+                             }).then(position => {
+                                // Create placemark
+                                var gpsPlacemarkObject = {
+                                    id: 'gps',
+                                    name: activeLanguage.textObject.myLocation,
+                                    description: '',
+                                    updateTime: new Date().getTime(),
+                                    centerCoordinate: {
+                                        lng: position.coords.longitude,
+                                        lat: position.coords.latitude,
+                                        alt: 0
+                                    }
+                                };
+
+                                // Add GPS placemark
+                                placemarkObjects.unshift(gpsPlacemarkObject);
+
+                                // Update layout with GPS location
+                                return updateLayout(selectElement, listElement, minutesDiff, false);
+                            }).catch((err) => {
+                                // Error by retrieving GPS location
+                                return updateLayout(selectElement, listElement, minutesDiff, false);
                             });
-                         }).then(position => {
-                            // Create placemark
-                            var gpsPlacemarkObject = {
-                                id: 'gps',
-                                name: activeLanguage.textObject.myLocation,
-                                description: '',
-                                updateTime: new Date().getTime(),
-                                centerCoordinate: {
-                                    lng: position.coords.longitude,
-                                    lat: position.coords.latitude,
-                                    alt: 0
-                                }
-                            };
-
-                            // Add GPS placemark
-                            placemarkObjects.unshift(gpsPlacemarkObject);
-
-                            // Update layout with GPS location
-                            return updateLayout(selectElement, listElement, minutesDiff);
-                        }).catch((err) => {
-                            // Error by retrieving GPS location
-                            return updateLayout(selectElement, listElement, minutesDiff);
-                        });
+                        } else {
+                            // No GPS location
+                            return updateLayout(selectElement, listElement, minutesDiff, false);
+                        }
                     } else {
-                        // No GPS location
-                        return updateLayout(selectElement, listElement, minutesDiff);
+                        // Create placemark
+                        var gpsPlacemarkObject = {
+                            id: 'gps',
+                            name: activeLanguage.textObject.myLocation,
+                            type: 'unknown',
+                            description: '',
+                            updateTime: new Date().getTime(),
+                            centerCoordinate: {
+                                lng: gpsLocation.lng,
+                                lat: gpsLocation.lat,
+                                alt: 0
+                            }
+                        };
+
+                        // Add GPS placemark
+                        placemarkObjects.unshift(gpsPlacemarkObject);
+
+                        // Update layout with GPS location
+                        return updateLayout(selectElement, listElement, minutesDiff, false);
                     }
                 } else {
-                    // Create placemark
-                    var gpsPlacemarkObject = {
-                        id: 'gps',
-                        name: activeLanguage.textObject.myLocation,
-                        type: 'unknown',
-                        description: '',
-                        updateTime: new Date().getTime(),
-                        centerCoordinate: {
-                            lng: gpsLocation.lng,
-                            lat: gpsLocation.lat,
-                            alt: 0
-                        }
-                    };
-
-                    // Add GPS placemark
-                    placemarkObjects.unshift(gpsPlacemarkObject);
-
-                    // Update layout with GPS location
-                    return updateLayout(selectElement, listElement, minutesDiff);
+                    return updateLayout(selectElement, listElement, minutesDiff, smartUpdate);
                 }
             });
         });
