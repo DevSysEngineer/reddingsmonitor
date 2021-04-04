@@ -829,8 +829,9 @@ function loadRemoteData() {
         // When we are using static position
         var smartUpdate = (placemarkObjects.length > 0);
         if (gpsLocation !== null) {
+            var newPlacemarkObjects = values[1];
             for (var i = 1; i < placemarkObjects.length; i++) { // Skip GPS
-                if (!value[i] || (value[i] && value[i].id !== placemarkObjects[i].id) ) {
+                if (!newPlacemarkObjects[i] || (newPlacemarkObjects[i] && newPlacemarkObjects[i].id !== placemarkObjects[i].id) ) {
                     smartUpdate = false;
                     break;
                 }
@@ -936,9 +937,10 @@ function loadRemoteData() {
             console.log(error);
         });
     }).catch(error => {
-        console.log(error);
         if (error >= 0) {
             updateDate(error);
+        } else {
+            console.log(error);
         }
         return true;
     });
