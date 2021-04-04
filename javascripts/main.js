@@ -760,10 +760,11 @@ function loadRemoteData() {
     }).then(values => {
         // Create list
         var promises = []
+        var selectElement = document.getElementById('select-follow-mode');
+        var listElement = document.getElementById('list');
 
         // Remove old values
         promises.push(new Promise(resolve => {
-            var selectElement = document.getElementById('select-follow-mode');
             while (selectElement.firstChild) {
                 selectElement.removeChild(selectElement.firstChild);
             }
@@ -772,7 +773,6 @@ function loadRemoteData() {
 
         // Remove old values
         promises.push(new Promise(resolve => {
-            var listElement = document.getElementById('list');
             while (listElement.firstChild) {
                 listElement.removeChild(listElement.firstChild);
             }
