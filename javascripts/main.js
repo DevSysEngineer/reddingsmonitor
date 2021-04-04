@@ -1077,6 +1077,8 @@ function initMap() {
             loadRemoteData().then(function() {
                 stopRequest = false;
             });
+        } else {
+            console.log("Can't retrieve new data");
         }
     }, refreshSeconds);
 }
