@@ -349,8 +349,29 @@ function triggerDarkMode(active) {
 }
 
 function triggerFollowMode(index) {
-    console.log(index);
+    // Stop here if index is the same as current active follow
+    if (activeFollow === index) {
+        return;
+    }
+
+    // Set folloow
     activeFollow = index;
+
+    // Check if map or placemark object is not valid
+    var placemarkObject = placemarkObjects[res[1]];
+    if (map == null || (typeof(placemarkObject) === 'undefined')) {
+        return;
+    }
+
+    // Remove place makers
+    removePlacemarkers();
+
+    // Pan to
+    var centerCoordinate = placemarkObject.centerCoordinate;
+    map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+
+    // Create placemarkers
+    rebuildPlacemarkers();
 }
 
 function removePlacemarkers() {
@@ -582,6 +603,14 @@ function updateLayout(selectElement, listElement, minutesDiff) {
     optionElement.text = '--';
     selectElement.appendChild(optionElement);
 
+    /* Move to center */
+    for (var i = 0; i < placemarkObjects.length; i++) {
+        if (i === activeFollow) {
+            var centerCoordinate = placemarkObjects[i].centerCoordinate;
+            map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+        }
+    }
+
     // Create sidebar elements
     for (var i = 0; i < placemarkObjects.length; i++) {
         // Get placemarkobject
@@ -596,7 +625,8 @@ function updateLayout(selectElement, listElement, minutesDiff) {
         selectElement.appendChild(optionElement);
 
         /* Select active follow */
-        if (optionElement.value === activeFollow) {
+        if (i === activeFollow) {
+            // Set select active elemnt
             selectElement.value = activeFollow;
         }
 
