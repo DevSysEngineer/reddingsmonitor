@@ -13,6 +13,7 @@ var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var lastKnownMinutesDiff = 0.0;
 var lastKnownHash = '';
+var validPayload = null;
 var activeFollow = 'none';
 var placemarkObjects = [];
 var placemarkMapObjects = [];
@@ -388,17 +389,15 @@ function triggerFollowMode(index) {
         var placemarkObject = placemarkObjects[i];
         if (placemarkObject.id === activeFollow) {
             // Remove place makers
-            removePlacemarkers();
+            removePlacemarkers().then(function() {
+                // Pan to
+                var centerCoordinate = placemarkObject.centerCoordinate;
+                map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
-            // Pan to
-            var centerCoordinate = placemarkObject.centerCoordinate;
-            map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
-
-            // Create placemarkers
-            rebuildPlacemarkers();
-
-            // Stop loop
-            break
+                // Create placemarkers
+                rebuildPlacemarkers();
+            });
+            break;
         }
     }
 }
@@ -414,7 +413,7 @@ function removePlacemarkers() {
     }
 
     /// Clear data
-    Promise.all(promises).then((values) => {
+    return Promise.all(promises).then((values) => {
         placemarkMapObjects = [];
     });
 }
@@ -529,14 +528,14 @@ function createSidebarElement(index, placemarkObject) {
         }
 
         // Remove place makers
-        removePlacemarkers();
+        removePlacemarkers().then(function() {
+            // Pan to
+            var centerCoordinate = placemarkObject.centerCoordinate;
+            map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
-        // Pan to
-        var centerCoordinate = placemarkObject.centerCoordinate;
-        map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
-
-        // Create placemarkers
-        rebuildPlacemarkers();
+            // Create placemarkers
+            rebuildPlacemarkers();
+        });
     };
 
     // Create li element
@@ -748,6 +747,7 @@ function loadRemoteData() {
 
                     // Update hash
                     lastKnownHash = jsonResponse.md5;
+                    validPayload = jsonResponse.payload;
 
                     // Get element by id and remove old childs
                     var selectElement = document.getElementById('select-follow-mode');
@@ -762,64 +762,64 @@ function loadRemoteData() {
                     }
 
                     // Remove place makers
-                    removePlacemarkers();
+                    removePlacemarkers().then(function() {
+                        // Set response payload
+                        placemarkObjects = validPayload;
 
-                    // Set response payload
-                    placemarkObjects = jsonResponse.payload;
+                        // Check if gps location is null
+                        if (gpsLocation === null) {
+                            // Check if GPS location is enabled
+                            if (hasGPSLocation) {
+                                // Try to get GPS location of current device
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                    // Create placemark
+                                    var gpsPlacemarkObject = {
+                                        id: 'gps',
+                                        name: activeLanguage.textObject.myLocation,
+                                        description: '',
+                                        updateTime: new Date().getTime(),
+                                        centerCoordinate: {
+                                            lng: position.coords.longitude,
+                                            lat: position.coords.latitude,
+                                            alt: 0
+                                        }
+                                    };
 
-                    // Check if gps location is null
-                    if (gpsLocation === null) {
-                        // Check if GPS location is enabled
-                        if (hasGPSLocation) {
-                            // Try to get GPS location of current device
-                            navigator.geolocation.getCurrentPosition(function(position) {
-                                // Create placemark
-                                var gpsPlacemarkObject = {
-                                    id: 'gps',
-                                    name: activeLanguage.textObject.myLocation,
-                                    description: '',
-                                    updateTime: new Date().getTime(),
-                                    centerCoordinate: {
-                                        lng: position.coords.longitude,
-                                        lat: position.coords.latitude,
-                                        alt: 0
-                                    }
-                                };
+                                    // Add GPS placemark
+                                    placemarkObjects.unshift(gpsPlacemarkObject);
 
-                                // Add GPS placemark
-                                placemarkObjects.unshift(gpsPlacemarkObject);
-
-                                // Update layout with GPS location
+                                    // Update layout with GPS location
+                                    updateLayout(selectElement, listElement, minutesDiff);
+                                }, function() {
+                                    // Error by retrieving GPS location
+                                    updateLayout(selectElement, listElement, minutesDiff);
+                                });
+                            } else {
+                                // No GPS location
                                 updateLayout(selectElement, listElement, minutesDiff);
-                            }, function() {
-                                // Error by retrieving GPS location
-                                updateLayout(selectElement, listElement, minutesDiff);
-                            });
+                            }
                         } else {
-                            // No GPS location
+                            // Create placemark
+                            var gpsPlacemarkObject = {
+                                id: 'gps',
+                                name: activeLanguage.textObject.myLocation,
+                                type: 'unknown',
+                                description: '',
+                                updateTime: new Date().getTime(),
+                                centerCoordinate: {
+                                    lng: gpsLocation.lng,
+                                    lat: gpsLocation.lat,
+                                    alt: 0
+                                }
+                            };
+
+                            // Add GPS placemark
+                            placemarkObjects.unshift(gpsPlacemarkObject);
+
+                            // Update layout with GPS location
                             updateLayout(selectElement, listElement, minutesDiff);
                         }
-                    } else {
-                        // Create placemark
-                        var gpsPlacemarkObject = {
-                            id: 'gps',
-                            name: activeLanguage.textObject.myLocation,
-                            type: 'unknown',
-                            description: '',
-                            updateTime: new Date().getTime(),
-                            centerCoordinate: {
-                                lng: gpsLocation.lng,
-                                lat: gpsLocation.lat,
-                                alt: 0
-                            }
-                        };
-
-                        // Add GPS placemark
-                        placemarkObjects.unshift(gpsPlacemarkObject);
-
-                        // Update layout with GPS location
-                        updateLayout(selectElement, listElement, minutesDiff);
-                    }
+                    });
                 }
             } else {
                 stopRequest = false;
