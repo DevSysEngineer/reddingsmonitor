@@ -828,7 +828,13 @@ function loadRemoteData() {
                 if (gpsLocation === null) {
                     // Check if GPS location is enabled
                     if (hasGPSLocation) {
-                        return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options)).then((position) => {
+                        return new Promise(function (resolve, reject) {
+                            navigator.geolocation.getCurrentPosition(function (position) {
+                                resolve(position);
+                            }, function (err) {
+                                reject(err);
+                            });
+                         }).then(position => {
                             // Create placemark
                             var gpsPlacemarkObject = {
                                 id: 'gps',
