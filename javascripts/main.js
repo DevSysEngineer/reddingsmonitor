@@ -734,6 +734,8 @@ function loadRemoteData() {
                     // Loop object
                     var jsonResponse = JSON.parse(this.responseText);
                     if (jsonResponse !== null) {
+                        console.log('TEST1');
+
                         // Check if data is chnaged
                         var minutesDiff = parseFloat(jsonResponse.minutesDiff);
                         if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
@@ -758,6 +760,8 @@ function loadRemoteData() {
         };
         xhttp.send();
     }).then(values => {
+        console.log('TEST2');
+
         // Get element by id and remove old childs
         var selectElement = document.getElementById('select-follow-mode');
         while (selectElement.firstChild) {
