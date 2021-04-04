@@ -835,7 +835,7 @@ function loadRemoteData() {
         if (error >= 0) {
             updateDate(error);
         }
-    }
+    });
 }
 
 function initMap() {
