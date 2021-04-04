@@ -12,7 +12,7 @@ var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var lastKnowMinutesDiff = 0.0;
-var activeFollow = null;
+var activeFollow = 'none';
 var placemarkObjects = [];
 var placemarkMapObjects = [];
 var darkModeStyles = [
@@ -357,21 +357,29 @@ function triggerFollowMode(index) {
     // Set folloow
     activeFollow = index;
 
-    // Check if map or placemark object is not valid
-    var placemarkObject = placemarkObjects[res[1]];
-    if (map == null || (typeof(placemarkObject) === 'undefined')) {
+    // Do nothing when acitive follow is none
+    if (activeFollow === 'none') {
         return;
     }
 
-    // Remove place makers
-    removePlacemarkers();
+    // Try to pan correct locaion
+    for (var i = 0; i < placemarkObjects.length; i++) {
+        var placemarkObject = placemarkObjects[i];
+        if (placemarkObject.id === activeFollow) {
+            // Remove place makers
+            removePlacemarkers();
 
-    // Pan to
-    var centerCoordinate = placemarkObject.centerCoordinate;
-    map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+            // Pan to
+            var centerCoordinate = placemarkObject.centerCoordinate;
+            map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
-    // Create placemarkers
-    rebuildPlacemarkers();
+            // Create placemarkers
+            rebuildPlacemarkers();
+
+            // Stop loop
+            break
+        }
+    }
 }
 
 function removePlacemarkers() {
@@ -394,7 +402,7 @@ function rebuildPlacemarkers() {
 function createOptionElement(index, placemarkObject) {
      // Create option element
     var optionElement = document.createElement('option');
-    optionElement.value = index;
+    optionElement.value = placemarkObject.id;
     optionElement.text = placemarkObject.name;
 
     // Return element
@@ -599,15 +607,18 @@ function createPlacemarkerMarker(placemarkObject) {
 function updateLayout(selectElement, listElement, minutesDiff) {
      // Create option element
     var optionElement = document.createElement('option');
-    optionElement.value = 0;
+    optionElement.value = 'none';
     optionElement.text = '--';
     selectElement.appendChild(optionElement);
 
     /* Move to center */
-    for (var i = 0; i < placemarkObjects.length; i++) {
-        if (i === activeFollow) {
-            var centerCoordinate = placemarkObjects[i].centerCoordinate;
-            map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+    if (activeFollow !== 'none') {
+        for (var i = 0; i < placemarkObjects.length; i++) {
+            var placemarkObject = placemarkObjects[i];
+            if (placemarkObject.id === activeFollow) {
+                var centerCoordinate = placemarkObject.centerCoordinate;
+                map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+            }
         }
     }
 
@@ -625,7 +636,7 @@ function updateLayout(selectElement, listElement, minutesDiff) {
         selectElement.appendChild(optionElement);
 
         /* Select active follow */
-        if (i === activeFollow) {
+        if (placemarkObject.id === activeFollow) {
             // Set select active elemnt
             selectElement.value = activeFollow;
         }
