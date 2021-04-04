@@ -701,7 +701,7 @@ function updateLayout(selectElement, listElement, minutesDiff) {
         // Update date
         promises.push(new Promise(resolve => {
             resolve(updateDate(minutesDiff));
-        });
+        }));
 
         // Run all promise
         return Promise.all(promises).then(function() {
