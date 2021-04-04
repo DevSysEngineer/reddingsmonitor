@@ -53,9 +53,9 @@ try {
         <div id="header">
             <div class="container">
                 <div id="logo">Reddings<span>monitor</span></div>
-                <div id="dark-mode">
+                <div id="settings">
                     <div id="lastupdate"></div>
-                    <select id="select-follow-mode" onchange="triggerFollowMode()" />
+                    <div id="follow"><span>Follow</span><select id="select-follow-mode" onchange="triggerFollowMode()" /></div>
                     <input id="checkbox-dark-mode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" />
                     <label for="checkbox-dark-mode">Dark mode</label>
                 </div>
