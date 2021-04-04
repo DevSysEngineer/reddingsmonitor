@@ -375,7 +375,6 @@ function createOptionElement(index, placemarkObject) {
     var optionElement = document.createElement('option');
     optionElement.value = index;
     optionElement.text = placemarkObject.name;
-    optionElement.checked = (activeFollow === index);
 
     // Return element
     return optionElement;
@@ -595,6 +594,11 @@ function updateLayout(selectElement, listElement, minutesDiff) {
         // Add option element to list element
         var optionElement = createOptionElement(i, placemarkObject);
         selectElement.appendChild(optionElement);
+
+        /* Select active follow */
+        if (optionElement.value === activeFollow) {
+            selectElement.value = activeFollow;
+        }
 
         // Create placemark
         createPlacemarkerMarker(placemarkObject);
