@@ -421,15 +421,17 @@ function removePlacemarkers() {
 }
 
 function rebuildPlacemarkers() {
+    // Get promises
     var promises = [];
     for (var i = 0; i < placemarkObjects.length; i++) {
         var placemarkObject = placemarkObjects[i];
         promises.push(createPlacemarkerMarker(placemarkObject));
     }
 
+    // Wait for all promises
     return Promise.all(promises).then((values) => {
         return true;
-    }
+    });
 }
 
 function createOptionElement(index, placemarkObject) {
