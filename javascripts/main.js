@@ -652,6 +652,9 @@ function createPlacemarkerMarker(placemarkObject) {
 
 function updateLayout(selectElement, listElement, minutesDiff, smartUpdate) {
     return new Promise(function (resolve, reject) {
+        /* Create some log */
+        console.log('Update layout');
+
         // Move to center
         var foundFollow = false;
         if (activeFollow !== 'none') {
