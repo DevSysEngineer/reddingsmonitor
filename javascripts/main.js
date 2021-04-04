@@ -835,6 +835,8 @@ function loadRemoteData() {
             }
         });
     }).catch(error => {
+        console.log(error);
+        
         stopRequest = false;
         if (error >= 0) {
             updateDate(error);
