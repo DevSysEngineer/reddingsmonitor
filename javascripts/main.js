@@ -348,7 +348,7 @@ function triggerDarkMode(active) {
 }
 
 function triggerFollowMode() {
-    
+
 }
 
 function removePlacemarkers() {
@@ -366,6 +366,16 @@ function rebuildPlacemarkers() {
         var placemarkObject = placemarkObjects[i];
         createPlacemarkerMarker(placemarkObject);
     }
+}
+
+function createOptionElement(index, placemarkObject) {
+     // Create option element
+    var optionElement = document.createElement('option');
+    optionElement.value = index;
+    optionElement.text = placemarkObject.name;
+
+    // Return element
+    return optionElement;
 }
 
 function createSidebarElement(index, placemarkObject) {
@@ -563,7 +573,13 @@ function createPlacemarkerMarker(placemarkObject) {
     placemarkMapObjects.push(popup);
 }
 
-function updateLayout(listElement, minutesDiff) {
+function updateLayout(selectElement, listElement, minutesDiff) {
+     // Create option element
+    var optionElement = document.createElement('option');
+    optionElement.value = 0;
+    optionElement.text = '--';
+    selectElement.appendChild(optionElement);
+
     // Create sidebar elements
     for (var i = 0; i < placemarkObjects.length; i++) {
         // Get placemarkobject
@@ -572,6 +588,10 @@ function updateLayout(listElement, minutesDiff) {
         // Add li element to list element
         var liElement = createSidebarElement(i, placemarkObject);
         listElement.appendChild(liElement);
+
+        // Add option element to list element
+        var optionElement = createOptionElement(i, placemarkObject);
+        selectElement.appendChild(optionElement);
 
         // Create placemark
         createPlacemarkerMarker(placemarkObject);
@@ -629,6 +649,12 @@ function loadRemoteData() {
                     }
 
                     // Get element by id and remove old childs
+                    var selectElement = document.getElementById('select-follow-mode');
+                    while (selectElement.firstChild) {
+                        selectElement.removeChild(selectElement.firstChild);
+                    }
+
+                    // Get element by id and remove old childs
                     var listElement = document.getElementById('list');
                     while (listElement.firstChild) {
                         listElement.removeChild(listElement.firstChild);
@@ -663,14 +689,14 @@ function loadRemoteData() {
                                 placemarkObjects.unshift(gpsPlacemarkObject);
 
                                 // Update layout with GPS location
-                                updateLayout(listElement, minutesDiff);
+                                updateLayout(selectElement, listElement, minutesDiff);
                             }, function() {
                                 // Error by retrieving GPS location
-                                updateLayout(listElement, minutesDiff);
+                                updateLayout(selectElement, listElement, minutesDiff);
                             });
                         } else {
                             // No GPS location
-                            updateLayout(listElement, minutesDiff);
+                            updateLayout(selectElement, listElement, minutesDiff);
                         }
                     } else {
                         // Create placemark
@@ -691,7 +717,7 @@ function loadRemoteData() {
                         placemarkObjects.unshift(gpsPlacemarkObject);
 
                         // Update layout with GPS location
-                        updateLayout(listElement, minutesDiff);
+                        updateLayout(selectElement, listElement, minutesDiff);
                     }
                 }
             } else {
