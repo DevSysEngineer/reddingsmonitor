@@ -98,7 +98,7 @@ var darkModeStyles = [
 ];
 var languages = [
     {
-        language: 'nl'
+        language: 'nl',
         textObject {
             myLocation: 'Mijn locatie',
             follow: 'Volg',
