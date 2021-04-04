@@ -55,7 +55,7 @@ html, body {
 #logo > span {
     color: #bfbfbf;
 }
-#lastupdate, #follow {
+#lastupdate {
     display: inline-block;
 }
 #lastupdate, #dark-mode, .location {
@@ -65,7 +65,7 @@ html, body {
 #lastupdate.error {
     color: red;
 }
-#lastupdate, #follow, #dark-mode, {
+#lastupdate, #dark-mode {
     text-align: right;
     padding-right: 10px;
 }
