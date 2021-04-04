@@ -341,10 +341,12 @@ function getMapClassName() {
 }
 
 function triggerDarkMode(active) {
-    if (map !== null) {
-        // Remove placemakers
-        removePlacemarkers();
+    if (map === null) {
+        return;
+    }
 
+    // Remove placemakers
+    removePlacemarkers().then(function() {
         // Set dark mode state
         darkMode = active;
 
@@ -361,8 +363,8 @@ function triggerDarkMode(active) {
         map.setOptions({styles: getMapStyles()});
 
         // Create placemarkers
-        rebuildPlacemarkers();
-    }
+        return rebuildPlacemarkers();
+    });
 }
 
 function triggerFollowMode(index) {
@@ -395,7 +397,7 @@ function triggerFollowMode(index) {
                 map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
                 // Create placemarkers
-                rebuildPlacemarkers();
+                return rebuildPlacemarkers();
             });
             break;
         }
@@ -419,9 +421,14 @@ function removePlacemarkers() {
 }
 
 function rebuildPlacemarkers() {
+    var promises = [];
     for (var i = 0; i < placemarkObjects.length; i++) {
         var placemarkObject = placemarkObjects[i];
-        createPlacemarkerMarker(placemarkObject);
+        promises.push(createPlacemarkerMarker(placemarkObject));
+    }
+
+    return Promise.all(promises).then((values) => {
+        return true;
     }
 }
 
@@ -534,7 +541,7 @@ function createSidebarElement(index, placemarkObject) {
             map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
 
             // Create placemarkers
-            rebuildPlacemarkers();
+            return rebuildPlacemarkers();
         });
     };
 
@@ -958,11 +965,10 @@ function initMap() {
             localStorage.setItem('mapTypeId', mapTypeId);
         }
 
-        // Remove placemakers
-        removePlacemarkers();
-
-        // Create placemarkers
-        rebuildPlacemarkers();
+        // Rebuild placemakers
+        removePlacemarkers().then(function() {
+            return rebuildPlacemarkers();
+        });
     });
 
     // Add listener for center changed
