@@ -722,7 +722,7 @@ function updateDate(minutesDiff) {
 }
 
 function loadRemoteData() {
-    new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
         xhttp.overrideMimeType('application/json');
         xhttp.open('GET', '%scriptMain%', true);
