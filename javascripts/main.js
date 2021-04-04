@@ -800,13 +800,10 @@ function loadRemoteData() {
                         // Check if data is chnaged
                         var minutesDiff = parseFloat(jsonResponse.minutesDiff);
                         if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
-                            console.log('TEST1');
                             reject(minutesDiff);
                         } else if (lastKnownHash === jsonResponse.md5) {
-                            console.log('TEST2');
                             reject(minutesDiff);
                         } else {
-                            console.log('TEST2');
                             // Update hash
                             lastKnownHash = jsonResponse.md5;
                             resolve([minutesDiff, jsonResponse.payload]);
@@ -858,9 +855,6 @@ function loadRemoteData() {
                 resolve();
             }));
         }
-
-        // Create some log
-        console.log('New data');
 
         // Clear data
         return Promise.all(promises).then(function() {
