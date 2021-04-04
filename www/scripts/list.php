@@ -3,6 +3,7 @@
 namespace Reddingsmonitor\Scripts;
 
 use Reddingsmonitor\Classes;
+use DateTime;
 
 /* Set dir */
 chdir(__DIR__);
@@ -30,8 +31,8 @@ try {
     }
 
     /* Get diff in minutes */
-    $nowDateTime = new \DateTime('now');
-    $fileDateTime = new \DateTime('now');
+    $nowDateTime = new DateTime('now');
+    $fileDateTime = new DateTime('now');
     $fileDateTime->setTimestamp($modifyTime);
     $minutesDiff = abs($nowDateTime->getTimestamp() - $fileDateTime->getTimestamp());
     if ($minutesDiff > 0) {
@@ -42,6 +43,7 @@ try {
     $object = new \stdClass;
     $object->payload = [];
     $object->minutesDiff = $minutesDiff;
+    $object->md5 = NULL;
 
     /* Check if the content is not FALSE */
     if ($content !== FALSE) {
@@ -58,6 +60,9 @@ try {
 
         /* Check result */
         if ($result !== NULL) {
+            /* Set md5 hash */
+            $object->md5 = md5($content);
+
             /* Get placemaks */
             $placemarkElements = $dom->getElementsByTagName('Placemark');
             foreach ($placemarkElements as $placemarkElement) {

@@ -11,7 +11,8 @@ var mapTypeId = 'roadmap';
 var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
-var lastKnowMinutesDiff = 0.0;
+var lastKnownMinutesDiff = 0.0;
+var lastKnownHash = '';
 var activeFollow = 'none';
 var placemarkObjects = [];
 var placemarkMapObjects = [];
@@ -95,6 +96,21 @@ var darkModeStyles = [
         stylers: [{color: '#17263c'}]
     }
 ];
+var languages = {
+    {
+        language: 'nl'
+        textObject {
+            myLocation: 'Mijn locatie',
+            follow: 'Volg',
+            darkMode: 'Donkere modus',
+            lastUpdate: {
+                normal: 'Laatst bijgewerkt',
+                error: 'Herstart alsjeblieft de GPS server'
+            }
+        }
+    }
+};
+var activeLanguage = languages[0];
 
 function definePopupClass() {
     Popup = function(id, position, title, type = 'unknown', draggable = false, extraClassname = 'default') {
@@ -688,16 +704,16 @@ function updateDate(minutesDiff) {
         var time = date.toLocaleTimeString();
 
         // Set date information
-        lastUpdateElement.innerHTML = 'Laatst bijgewerkt: ' + n + ' ' + time;
+        lastUpdateElement.innerHTML = activeLanguage.textObject.lastUpdate.normal + ': ' + n + ' ' + time;
         lastUpdateElement.className = '';
     } else {
         // Set some text
-        lastUpdateElement.innerHTML = 'Please restart GPS server';
+        lastUpdateElement.innerHTML = activeLanguage.textObject.lastUpdate.error;
         lastUpdateElement.className = 'error';
     }
 
     // Update last know minutes diff
-    lastKnowMinutesDiff = minutesDiff;
+    lastKnownMinutesDiff = minutesDiff;
 }
 
 function loadRemoteData() {
@@ -714,11 +730,18 @@ function loadRemoteData() {
                 if (jsonResponse !== null) {
                     // Check if data is chnaged
                     var minutesDiff = parseFloat(jsonResponse.minutesDiff);
-                    if (lastKnowMinutesDiff !== 0.0 && minutesDiff >= lastKnowMinutesDiff) {
+                    if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
+                        updateDate(minutesDiff);
+                        stopRequest = false;
+                        return;
+                    } else if (lastKnownHash === jsonResponse.md5) {
                         updateDate(minutesDiff);
                         stopRequest = false;
                         return;
                     }
+
+                    // Update hash
+                    lastKnownHash = jsonResponse.md5;
 
                     // Get element by id and remove old childs
                     var selectElement = document.getElementById('select-follow-mode');
@@ -747,7 +770,7 @@ function loadRemoteData() {
                                 // Create placemark
                                 var gpsPlacemarkObject = {
                                     id: 'gps',
-                                    name: 'Mijn locatie',
+                                    name: activeLanguage.textObject.myLocation,
                                     description: '',
                                     updateTime: new Date().getTime(),
                                     centerCoordinate: {
@@ -774,7 +797,7 @@ function loadRemoteData() {
                         // Create placemark
                         var gpsPlacemarkObject = {
                             id: 'gps',
-                            name: 'Mijn locatie',
+                            name: activeLanguage.textObject.myLocation,
                             type: 'unknown',
                             description: '',
                             updateTime: new Date().getTime(),
@@ -920,6 +943,14 @@ function initMap() {
     google.maps.event.addListener(map, 'dragend', function () {
         isDragging = false;
     });
+
+    // Update text label
+    var textFollowModeElement = document.getElementById('text-follow-mode');
+    textFollowModeElement.innerHTML = activeLanguage.textObject.follow;
+
+    // Update text label
+    var labelDarkModeElement = document.getElementById('label-dark-mode');
+    labelDarkModeElement.innerHTML = activeLanguage.textObject.darkMode;
 
     // Load for first time remote data
     loadRemoteData();
