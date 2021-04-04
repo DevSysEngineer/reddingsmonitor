@@ -825,7 +825,7 @@ function loadRemoteData() {
         var listElement = document.getElementById('list');
 
         // When we are using static position
-        var smartUpdate = true;
+        var smartUpdate = (placemarkObjects.length > 0);
         if (gpsLocation !== null) {
             for (var i = 1; i < placemarkObjects.length; i++) { // Skip GPS
                 if (!value[i] || (value[i] && value[i].id !== placemarkObjects[i].id) ) {
