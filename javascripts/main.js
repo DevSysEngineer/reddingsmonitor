@@ -855,6 +855,9 @@ function loadRemoteData() {
                 resolve();
             }));
         } else {
+            promises.push(new Promise(resolve => {
+                resolve(true);
+            }));
             console.log('smartUpdate is active');
         }
 
