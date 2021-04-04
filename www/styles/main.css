@@ -65,8 +65,8 @@ html, body {
 #lastupdate.error {
     color: red;
 }
-#lastupdate, #settings * {
-    padding-right: 10px;
+#lastupdate, #settings span, #settings select, #settings label {
+    margin-right: 10px;
 }
 #lastupdate, #settings  {
     text-align: right;
