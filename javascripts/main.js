@@ -631,70 +631,70 @@ function createPlacemarkerMarker(placemarkObject) {
 }
 
 function updateLayout(selectElement, listElement, minutesDiff) {
-     // Create option element
-    var optionElement = document.createElement('option');
-    optionElement.value = 'none';
-    optionElement.text = '--';
-    selectElement.appendChild(optionElement);
-
-    /* Move to center */
-    var foundFollow = false;
-    if (activeFollow !== 'none') {
-        for (var i = 0; i < placemarkObjects.length; i++) {
-            var placemarkObject = placemarkObjects[i];
-            if (placemarkObject.id === activeFollow) {
-                // We found the follow
-                foundFollow = true;
-
-                // Update maps
-                var centerCoordinate = placemarkObject.centerCoordinate;
-                map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
-            }
-        }
-    } else {
-        foundFollow = true;
-    }
-
-    // Create sidebar elements
-    for (var i = 0; i < placemarkObjects.length; i++) {
-        // Get placemarkobject
-        var placemarkObject = placemarkObjects[i];
-
-        // Add li element to list element
-        var liElement = createSidebarElement(i, placemarkObject);
-        listElement.appendChild(liElement);
-
-        // Add option element to list element
-        var optionElement = createOptionElement(i, placemarkObject);
+    return new Promise(function (resolve, reject) {
+         // Create option element
+        var optionElement = document.createElement('option');
+        optionElement.value = 'none';
+        optionElement.text = '--';
         selectElement.appendChild(optionElement);
 
-        /* Select active follow */
-        if (placemarkObject.id === activeFollow) {
-            // Set select active elemnt
-            selectElement.value = activeFollow;
+        /* Move to center */
+        var foundFollow = false;
+        if (activeFollow !== 'none') {
+            for (var i = 0; i < placemarkObjects.length; i++) {
+                var placemarkObject = placemarkObjects[i];
+                if (placemarkObject.id === activeFollow) {
+                    // We found the follow
+                    foundFollow = true;
+
+                    // Update maps
+                    var centerCoordinate = placemarkObject.centerCoordinate;
+                    map.panTo(new google.maps.LatLng(centerCoordinate.lat, centerCoordinate.lng));
+                }
+            }
+        } else {
+            foundFollow = true;
         }
 
-        // Create placemark
-        createPlacemarkerMarker(placemarkObject);
-    }
+        // Create sidebar elements
+        for (var i = 0; i < placemarkObjects.length; i++) {
+            // Get placemarkobject
+            var placemarkObject = placemarkObjects[i];
 
-    /* It cam be that active follow not exists anymore */
-    if (!foundFollow) {
-        // Reset values
-        selectElement.value = 'none';
-        activeFollow = 'none';
+            // Add li element to list element
+            var liElement = createSidebarElement(i, placemarkObject);
+            listElement.appendChild(liElement);
 
-        // Check if user has local storage and if possible store data
-        if (hasLocalStorage) {
-            localStorage.setItem('activeFollow', 'none');
+            // Add option element to list element
+            var optionElement = createOptionElement(i, placemarkObject);
+            selectElement.appendChild(optionElement);
+
+            /* Select active follow */
+            if (placemarkObject.id === activeFollow) {
+                // Set select active elemnt
+                selectElement.value = activeFollow;
+            }
+
+            // Create placemark
+            createPlacemarkerMarker(placemarkObject);
         }
-    }
 
-    // Update date
-    updateDate(minutesDiff);
+        /* It cam be that active follow not exists anymore */
+        if (!foundFollow) {
+            // Reset values
+            selectElement.value = 'none';
+            activeFollow = 'none';
 
-    // Ready
-    stopRequest = false;
+            // Check if user has local storage and if possible store data
+            if (hasLocalStorage) {
+                localStorage.setItem('activeFollow', 'none');
+            }
+        }
+
+        // Update date
+        updateDate(minutesDiff);
+        resolve(true);
+    });
 }
 
 function updateDate(minutesDiff) {
@@ -722,6 +722,7 @@ function updateDate(minutesDiff) {
 }
 
 function loadRemoteData() {
+    stopRequest = true;
     return new Promise(function (resolve, reject) {
         var xhttp = new XMLHttpRequest();
         xhttp.overrideMimeType('application/json');
@@ -783,15 +784,14 @@ function loadRemoteData() {
         return Promise.all(promises).then(function() {
             return removePlacemarkers().then(function() {
                 // Set response payload
-                minutesDiff = values[0];
+                var minutesDiff = values[0];
                 placemarkObjects = values[1];
 
                 // Check if gps location is null
                 if (gpsLocation === null) {
                     // Check if GPS location is enabled
                     if (hasGPSLocation) {
-                        // Try to get GPS location of current device
-                        navigator.geolocation.getCurrentPosition(function(position) {
+                        return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options)).then((position) => {
                             // Create placemark
                             var gpsPlacemarkObject = {
                                 id: 'gps',
@@ -809,14 +809,14 @@ function loadRemoteData() {
                             placemarkObjects.unshift(gpsPlacemarkObject);
 
                             // Update layout with GPS location
-                            updateLayout(selectElement, listElement, minutesDiff);
-                        }, function() {
+                            return updateLayout(selectElement, listElement, minutesDiff);
+                        }).catch((err) => {
                             // Error by retrieving GPS location
-                            updateLayout(selectElement, listElement, minutesDiff);
+                            return updateLayout(selectElement, listElement, minutesDiff);
                         });
                     } else {
                         // No GPS location
-                        updateLayout(selectElement, listElement, minutesDiff);
+                        return updateLayout(selectElement, listElement, minutesDiff);
                     }
                 } else {
                     // Create placemark
@@ -837,7 +837,7 @@ function loadRemoteData() {
                     placemarkObjects.unshift(gpsPlacemarkObject);
 
                     // Update layout with GPS location
-                    updateLayout(selectElement, listElement, minutesDiff);
+                    return updateLayout(selectElement, listElement, minutesDiff);
                 }
             });
         });
@@ -979,16 +979,15 @@ function initMap() {
     labelDarkModeElement.innerHTML = activeLanguage.textObject.darkMode;
 
     // Load for first time remote data
-    loadRemoteData().then(function(msg) {
-
+    loadRemoteData().then(function() {
+        stopRequest = false;
     });
 
     // Create interval for retrieving new data
     setInterval(function() {
         if (!stopRequest && !isDragging && !isPlacemarkDragging) {
-            stopRequest = true;
-            loadRemoteData().then(function(msg) {
-
+            loadRemoteData().then(function() {
+                stopRequest = false;
             });
         }
     }, refreshSeconds);
