@@ -722,111 +722,120 @@ function updateDate(minutesDiff) {
 }
 
 function loadRemoteData() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.overrideMimeType('application/json');
-    xhttp.open('GET', '%scriptMain%', true);
-    xhttp.onreadystatechange = function() {
-        // Check if request is done
-        if (this.readyState == 4) {
-            // Check if the response status is good
-            if (this.status == 200 && this.responseText !== null) {
-                // Loop object
-                var jsonResponse = JSON.parse(this.responseText);
-                if (jsonResponse !== null) {
-                    // Check if data is chnaged
-                    var minutesDiff = parseFloat(jsonResponse.minutesDiff);
-                    if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
-                        updateDate(minutesDiff);
-                        stopRequest = false;
-                        return;
-                    } else if (lastKnownHash === jsonResponse.md5) {
-                        updateDate(minutesDiff);
-                        stopRequest = false;
-                        return;
-                    }
-
-                    // Update hash
-                    lastKnownHash = jsonResponse.md5;
-                    validPayload = jsonResponse.payload;
-
-                    // Get element by id and remove old childs
-                    var selectElement = document.getElementById('select-follow-mode');
-                    while (selectElement.firstChild) {
-                        selectElement.removeChild(selectElement.firstChild);
-                    }
-
-                    // Get element by id and remove old childs
-                    var listElement = document.getElementById('list');
-                    while (listElement.firstChild) {
-                        listElement.removeChild(listElement.firstChild);
-                    }
-
-                    // Remove place makers
-                    removePlacemarkers().then(function() {
-                        // Set response payload
-                        placemarkObjects = validPayload;
-
-                        // Check if gps location is null
-                        if (gpsLocation === null) {
-                            // Check if GPS location is enabled
-                            if (hasGPSLocation) {
-                                // Try to get GPS location of current device
-                                navigator.geolocation.getCurrentPosition(function(position) {
-                                    // Create placemark
-                                    var gpsPlacemarkObject = {
-                                        id: 'gps',
-                                        name: activeLanguage.textObject.myLocation,
-                                        description: '',
-                                        updateTime: new Date().getTime(),
-                                        centerCoordinate: {
-                                            lng: position.coords.longitude,
-                                            lat: position.coords.latitude,
-                                            alt: 0
-                                        }
-                                    };
-
-                                    // Add GPS placemark
-                                    placemarkObjects.unshift(gpsPlacemarkObject);
-
-                                    // Update layout with GPS location
-                                    updateLayout(selectElement, listElement, minutesDiff);
-                                }, function() {
-                                    // Error by retrieving GPS location
-                                    updateLayout(selectElement, listElement, minutesDiff);
-                                });
-                            } else {
-                                // No GPS location
-                                updateLayout(selectElement, listElement, minutesDiff);
-                            }
+    new Promise(function (resolve, reject) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.overrideMimeType('application/json');
+        xhttp.open('GET', '%scriptMain%', true);
+        xhttp.onreadystatechange = function() {
+            // Check if request is done
+            if (this.readyState == 4) {
+                // Check if the response status is good
+                if (this.status == 200 && this.responseText !== null) {
+                    // Loop object
+                    var jsonResponse = JSON.parse(this.responseText);
+                    if (jsonResponse !== null) {
+                        // Check if data is chnaged
+                        var minutesDiff = parseFloat(jsonResponse.minutesDiff);
+                        if (lastKnownMinutesDiff !== 0.0 && minutesDiff >= lastKnownMinutesDiff) {
+                            reject(minutesDiff);
+                            return;
+                        } else if (lastKnownHash === jsonResponse.md5) {
+                            reject(minutesDiff);
                         } else {
-                            // Create placemark
-                            var gpsPlacemarkObject = {
-                                id: 'gps',
-                                name: activeLanguage.textObject.myLocation,
-                                type: 'unknown',
-                                description: '',
-                                updateTime: new Date().getTime(),
-                                centerCoordinate: {
-                                    lng: gpsLocation.lng,
-                                    lat: gpsLocation.lat,
-                                    alt: 0
-                                }
-                            };
-
-                            // Add GPS placemark
-                            placemarkObjects.unshift(gpsPlacemarkObject);
-
-                            // Update layout with GPS location
-                            updateLayout(selectElement, listElement, minutesDiff);
+                            // Update hash
+                            lastKnownHash = jsonResponse.md5;
+                            resolve([minutesDiff, jsonResponse.payload]);
                         }
-                    });
+                    } else {
+                        reject(-1.0);
+                    }
+                } else {
+                    reject(-1.0);
                 }
             } else {
-                stopRequest = false;
+                reject(-1.0);
             }
+        };
+        xhttp.send();
+    }.then(values => {
+        // Get element by id and remove old childs
+        var selectElement = document.getElementById('select-follow-mode');
+        while (selectElement.firstChild) {
+            selectElement.removeChild(selectElement.firstChild);
         }
-    };
-    xhttp.send();
+
+        // Get element by id and remove old childs
+        var listElement = document.getElementById('list');
+        while (listElement.firstChild) {
+            listElement.removeChild(listElement.firstChild);
+        }
+
+        // Remove place makers
+        removePlacemarkers().then(function() {
+            // Set response payload
+            minutesDiff = values[0];
+            placemarkObjects = values[1];
+
+            // Check if gps location is null
+            if (gpsLocation === null) {
+                // Check if GPS location is enabled
+                if (hasGPSLocation) {
+                    // Try to get GPS location of current device
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        // Create placemark
+                        var gpsPlacemarkObject = {
+                            id: 'gps',
+                            name: activeLanguage.textObject.myLocation,
+                            description: '',
+                            updateTime: new Date().getTime(),
+                            centerCoordinate: {
+                                lng: position.coords.longitude,
+                                lat: position.coords.latitude,
+                                alt: 0
+                            }
+                        };
+
+                        // Add GPS placemark
+                        placemarkObjects.unshift(gpsPlacemarkObject);
+
+                        // Update layout with GPS location
+                        updateLayout(selectElement, listElement, minutesDiff);
+                    }, function() {
+                        // Error by retrieving GPS location
+                        updateLayout(selectElement, listElement, minutesDiff);
+                    });
+                } else {
+                    // No GPS location
+                    updateLayout(selectElement, listElement, minutesDiff);
+                }
+            } else {
+                // Create placemark
+                var gpsPlacemarkObject = {
+                    id: 'gps',
+                    name: activeLanguage.textObject.myLocation,
+                    type: 'unknown',
+                    description: '',
+                    updateTime: new Date().getTime(),
+                    centerCoordinate: {
+                        lng: gpsLocation.lng,
+                        lat: gpsLocation.lat,
+                        alt: 0
+                    }
+                };
+
+                // Add GPS placemark
+                placemarkObjects.unshift(gpsPlacemarkObject);
+
+                // Update layout with GPS location
+                updateLayout(selectElement, listElement, minutesDiff);
+            }
+        });
+    }).catch(error => {
+        stopRequest = false;
+        if (error >= 0) {
+            updateDate(error);
+        }
+    }
 }
 
 function initMap() {
