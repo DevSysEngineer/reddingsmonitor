@@ -55,7 +55,7 @@ try {
                 <div id="logo">Reddings<span>monitor</span></div>
                 <div id="settings">
                     <div id="lastupdate"></div>
-                    <span>Follow</span><select id="select-follow-mode" onchange="triggerFollowMode()" />
+                    <span>Follow</span><select id="select-follow-mode" onchange="triggerFollowMode(this.value)" />
                     <input id="checkbox-dark-mode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" />
                     <label for="checkbox-dark-mode">Dark mode</label>
                 </div>

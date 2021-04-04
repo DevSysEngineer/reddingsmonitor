@@ -12,6 +12,7 @@ var hasLocalStorage = (typeof(Storage) !== 'undefined');
 var hasGPSLocation = (typeof(navigator.geolocation) !== 'undefined');
 var refreshSeconds = %refreshSeconds%;
 var lastKnowMinutesDiff = 0.0;
+var activeFollow = null;
 var placemarkObjects = [];
 var placemarkMapObjects = [];
 var darkModeStyles = [
@@ -347,8 +348,9 @@ function triggerDarkMode(active) {
     }
 }
 
-function triggerFollowMode() {
-
+function triggerFollowMode(index) {
+    console.log(index);
+    activeFollow = index;
 }
 
 function removePlacemarkers() {
@@ -373,6 +375,7 @@ function createOptionElement(index, placemarkObject) {
     var optionElement = document.createElement('option');
     optionElement.value = index;
     optionElement.text = placemarkObject.name;
+    optionElement.checked = (activeFollow === index);
 
     // Return element
     return optionElement;
