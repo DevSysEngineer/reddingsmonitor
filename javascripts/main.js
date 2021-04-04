@@ -968,13 +968,17 @@ function initMap() {
     labelDarkModeElement.innerHTML = activeLanguage.textObject.darkMode;
 
     // Load for first time remote data
-    loadRemoteData();
+    loadRemoteData().then(function(msg) {
+
+    });
 
     // Create interval for retrieving new data
     setInterval(function() {
         if (!stopRequest && !isDragging && !isPlacemarkDragging) {
             stopRequest = true;
-            loadRemoteData();
+            loadRemoteData().then(function(msg) {
+
+            });
         }
     }, refreshSeconds);
 }
