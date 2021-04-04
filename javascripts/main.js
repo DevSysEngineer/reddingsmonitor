@@ -96,7 +96,7 @@ var darkModeStyles = [
         stylers: [{color: '#17263c'}]
     }
 ];
-var languages = {
+var languages = [
     {
         language: 'nl'
         textObject {
@@ -109,7 +109,7 @@ var languages = {
             }
         }
     }
-};
+];
 var activeLanguage = languages[0];
 
 function definePopupClass() {
