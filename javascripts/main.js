@@ -405,12 +405,18 @@ function triggerFollowMode(index) {
 
 function removePlacemarkers() {
     // Remove placemakers
+    var promises = [];
     for (var i = 0; i < placemarkMapObjects.length; i++) {
-        placemarkMapObjects[i].setMap(null);
+        promises.push(new Promise(resolve => {
+            placemarkMapObjects[i].setMap(null);
+            resolve();
+        }));
     }
 
-    // Clear data
-    placemarkMapObjects = [];
+    /// Clear data
+    Promise.all(promises).then((values) => {
+        placemarkMapObjects = [];
+    });
 }
 
 function rebuildPlacemarkers() {
