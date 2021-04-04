@@ -754,8 +754,6 @@ function loadRemoteData() {
                 } else {
                     reject(-1.0);
                 }
-            } else {
-                reject(-1.0);
             }
         };
         xhttp.send();
@@ -836,7 +834,7 @@ function loadRemoteData() {
         });
     }).catch(error => {
         console.log(error);
-        
+
         stopRequest = false;
         if (error >= 0) {
             updateDate(error);
