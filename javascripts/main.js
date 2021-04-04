@@ -932,6 +932,8 @@ function loadRemoteData() {
                     return updateLayout(selectElement, listElement, minutesDiff, smartUpdate);
                 }
             });
+        }).catch(error => {
+            console.log(error);
         });
     }).catch(error => {
         console.log(error);
