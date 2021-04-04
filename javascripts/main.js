@@ -757,7 +757,7 @@ function loadRemoteData() {
             }
         };
         xhttp.send();
-    }.then(values => {
+    }).then(values => {
         // Get element by id and remove old childs
         var selectElement = document.getElementById('select-follow-mode');
         while (selectElement.firstChild) {
