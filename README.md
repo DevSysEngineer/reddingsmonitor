@@ -31,4 +31,4 @@ The Reddingsmonitor is a project set up in collaboration with the Zandvoort resc
 bash -c "nohup php /mnt/c/Users/{NAME}/Desktop/Reddingsmonitor/bin/upload.php --url {URL} --secretKey {KEY} --file snaphot.kml > /dev/null 2>&1 &"
 ```
 * Replace the {NAME} path with the path to upload.php on your pc. Make sure the path starts with /mnt/c/ and not C:.
-* Replace the {URL}, {KEY} with the details that is given from Reddingsmonitor team.
+* Replace the {URL} and {KEY} with the details that is given from Reddingsmonitor team.

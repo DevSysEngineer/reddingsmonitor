@@ -835,7 +835,7 @@ function loadRemoteData() {
                             gpsReject(err);
                         });
                     }).then(position => {
-                        /* Check if we already know the location */
+                        // Check if we already know the location
                         if (lastKnownGPSLocation === null || (lastKnownGPSLocation !== null && 
                             (lastKnownGPSLocation.centerCoordinate.lng != position.coords.longitude || lastKnownGPSLocation.centerCoordinate.lat != position.coords.latitude))) {
 
@@ -885,8 +885,8 @@ function loadRemoteData() {
             var smartUpdate = (placemarkObjects.length > 0 && gpsSame);
             if (smartUpdate) {
                 var newPlacemarkObjects = httpValues[1];
-                for (var i = 1; i < placemarkObjects.length; i++) { // Skip GPS
-                    if (!newPlacemarkObjects[i] || (newPlacemarkObjects[i] && newPlacemarkObjects[i].id !== placemarkObjects[i].id) ) {
+                for (var i = 0; i < placemarkObjects.length; i++) {
+                    if (!newPlacemarkObjects[i] || (newPlacemarkObjects[i] && newPlacemarkObjects[i].id !== placemarkObjects[i].id)) {
                         smartUpdate = false;
                         break;
                     }
