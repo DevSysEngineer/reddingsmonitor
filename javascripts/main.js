@@ -872,6 +872,8 @@ function loadRemoteData() {
                 }, true]);
             }
         }).then(locationValues => {
+            console.log('DEBUG');
+
             // Set values
             lastKnownGPSLocation = locationValues[0];
             var gpsPlacemarkObject = locationValues[0];
