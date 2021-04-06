@@ -11,7 +11,7 @@ html, body {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
 }
-[type="checkbox"] {
+select, [type="checkbox"] {
     vertical-align: middle;
 }
 #header, #list li a:hover, .popup-bubble-content.default {
