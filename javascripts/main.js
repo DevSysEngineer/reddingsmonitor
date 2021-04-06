@@ -831,6 +831,8 @@ function loadRemoteData() {
                             reject(err);
                         });
                     }).then(position => {
+                        console.log('DEBUG1');
+
                         /* Check if we already know the location */
                         if (lastKnownGPSLocation === null || (lastKnownGPSLocation !== null && 
                             (lastKnownGPSLocation.centerCoordinate.lng != position.coords.longitude || lastKnownGPSLocation.centerCoordinate.lat != position.coords.latitude))) {
@@ -1079,6 +1081,9 @@ function initMap() {
     // Load for first time remote data
     loadRemoteData().then(function() {
         stopRequest = false;
+    }).catch((err) => {
+        stopRequest = false;
+        console.log(err);
     });
 
     // Create interval for retrieving new data
@@ -1086,6 +1091,9 @@ function initMap() {
         if (!stopRequest && !isDragging && !isPlacemarkDragging) {
             loadRemoteData().then(function() {
                 stopRequest = false;
+            }).catch((err) => {
+                stopRequest = false;
+                console.log(err);
             });
         } else {
             console.log("Can't retrieve new data");
