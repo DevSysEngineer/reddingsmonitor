@@ -838,7 +838,7 @@ function loadRemoteData() {
                             (lastKnownGPSLocation.centerCoordinate.lng != position.coords.longitude || lastKnownGPSLocation.centerCoordinate.lat != position.coords.latitude))) {
 
                             // Create placemark
-                            return [{
+                            parentResolve([{
                                 id: 'gps',
                                 name: activeLanguage.textObject.myLocation,
                                 description: '',
@@ -848,12 +848,12 @@ function loadRemoteData() {
                                     lat: position.coords.latitude,
                                     alt: 0
                                 }
-                            }, false];
+                            }, false]);
                         } else {
-                            return [lastKnownGPSLocation, true];
+                            parentResolve([lastKnownGPSLocation, true]);
                         }
                     }).catch((err) => {
-                        return [null, false];
+                        parentResolve([null, false]);
                     });
                 } else {
                     parentResolve([null, false]);
