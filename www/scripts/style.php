@@ -29,7 +29,7 @@ try {
     header('Content-Length: ' . strlen($output));
 
     /* Show output */
-    echo $output;
+    echo $content;
 } catch (\Exception $e) {
     header('HTTP/1.0 500 Internal Server Error');
     exit;
