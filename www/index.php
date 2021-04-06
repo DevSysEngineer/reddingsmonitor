@@ -56,7 +56,8 @@ try {
                 <div id="settings">
                     <div id="lastupdate"></div>
                     <span id="text-follow-mode"></span><select id="select-follow-mode" onchange="triggerFollowMode(this.value)" />
-                    <label id="label-dark-mode" for="checkbox-dark-mode"><input id="checkbox-dark-mode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" /></label>
+                    <input id="checkbox-dark-mode" type="checkbox" value="1" onchange="triggerDarkMode(this.checked)" />
+                    <label id="label-dark-mode" for="checkbox-dark-mode" />
                 </div>
             </div>
         </div>
