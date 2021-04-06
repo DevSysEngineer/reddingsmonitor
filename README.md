@@ -9,15 +9,15 @@ The Reddingsmonitor is a project set up in collaboration with the Zandvoort resc
 * Open Turn Windows features on or off menu
 * Enable Windows Subsystem for Linux
 * Press OK and reboot your system
+* Open PowerShell (Run as Administrator)
+* Set WSL 2 as default
+* wsl ```--set-default-version 2```
 * Open the Microsoft Store Page and install Debian
 * Open Debian by pressing CNTRL + R, type Debian and hit enter.
 * Follow install instructions
 * Close installation window
-* Open PowerShell (Run as Administrator)
-* Set WSL 2 as default
-* wsl --set-default-version 2
-* Run package manager on WSL. ```sudo apt-get update && apt-get dist-upgrade```
-* Install extra packages on WSL. ```sudo apt-get install php-cli php-curl```
+* Run package manager on WSL. ```sudo apt-get update && sudo apt-get dist-upgrade```
+* Install extra packages on WSL. ```sudo apt-get install php-cli php-curl php-dom```
 * Deploy https://github.com/KvanSteijn/reddingsmonitor in a folder on your system.
 * We need to create a new logon task in the windows task scheduler so that upload will start when at logon.
 * Open the windows task scheduler. Not task manager, but task scheduler.
