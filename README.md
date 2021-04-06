@@ -28,6 +28,7 @@ The Reddingsmonitor is a project set up in collaboration with the Zandvoort resc
 * At the top, click on the tab 'Actions'.
 * In the windows task scheduler, add a new logon task. With script ```wsl``` and arguments.
 ```shell
-bash -c "nohup php /mnt/c/Users/{NAME}/Desktop/Reddingsmonitor/bin/upload.php > /dev/null 2>&1 &"
+bash -c "nohup php /mnt/c/Users/{NAME}/Desktop/Reddingsmonitor/bin/upload.php --url {URL} --secretKey {KEY} --file snaphot.kml > /dev/null 2>&1 &"
 ```
-Replace the {USER} path with the path to upload.php on your pc. This will automatically start uploading when you log into windows. Make sure the path starts with /mnt/c/ and not C:.
+Replace the {NAME} path with the path to upload.php on your pc. Make sure the path starts with /mnt/c/ and not C:.
+Replace the {URL}, {KEY} with the details that is given from Reddingsmonitor team.
