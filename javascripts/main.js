@@ -654,7 +654,11 @@ function createPlacemarkerMarker(placemarkObject) {
 function updateLayout(selectElement, listElement, minutesDiff, smartUpdate) {
     return new Promise(function (resolve, reject) {
         /* Create some log */
-        console.log('Update layout');
+        if (smartUpdate) {
+            console.log('Update layout with smart update');
+        } else {
+            console.log('Update layout');
+        }
 
         // Move to center
         var foundFollow = false;
@@ -824,15 +828,13 @@ function loadRemoteData() {
             if (gpsLocation === null) {
                 // Check if GPS location is enabled
                 if (hasGPSLocation) {
-                    return new Promise(function (resolve, reject) {
+                    return new Promise(function (gpsResolve, gpsReject) {
                         navigator.geolocation.getCurrentPosition(function (position) {
-                            resolve(position);
+                            gpsResolve(position);
                         }, function (err) {
-                            reject(err);
+                            gpsReject(err);
                         });
                     }).then(position => {
-                        console.log('DEBUG1');
-
                         /* Check if we already know the location */
                         if (lastKnownGPSLocation === null || (lastKnownGPSLocation !== null && 
                             (lastKnownGPSLocation.centerCoordinate.lng != position.coords.longitude || lastKnownGPSLocation.centerCoordinate.lat != position.coords.latitude))) {
@@ -874,8 +876,6 @@ function loadRemoteData() {
                 }, true]);
             }
         }).then(locationValues => {
-            console.log('DEBUG');
-
             // Set values
             lastKnownGPSLocation = locationValues[0];
             var gpsPlacemarkObject = locationValues[0];
