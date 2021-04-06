@@ -107,7 +107,7 @@ class Config {
         return 'https://maps.googleapis.com/maps/api/js?key=' .  $this->getGoogleMapsAPIKey();
     }
 
-    public function createScriptURL(string $token, string $id = 'main') : string {
+    public function createScriptURL(string $token, string $id) : string {
         return $this->_url . '/scripts/' . $id . '.php?secretkey=' . $this->_key . '&token=' . $token;
     }
 
