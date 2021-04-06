@@ -26,7 +26,7 @@ try {
 
     /* Set header */
     header('Content-Type: text/css');
-    header('Content-Length: ' . strlen($output));
+    header('Content-Length: ' . strlen($content));
 
     /* Show output */
     echo $content;
