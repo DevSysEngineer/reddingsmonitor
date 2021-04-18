@@ -875,16 +875,16 @@ function loadRemoteData() {
                     }
                 });
             }
-        }).then(locationValues => {
+        }).then(locationGPS => {
             // Check if GPS object is changed
             var preSmartupdate = true;
-            if (placemarkObjects.length <= 0 && lastKnownGPSLocation !== null && locationValues[0] === null) {
+            if (placemarkObjects.length <= 0 && lastKnownGPSLocation !== null && locationGPS === null) {
                 preSmartupdate  = false;
             }
 
             // Set values
-            lastKnownGPSLocation = locationValues[0];
-            var gpsPlacemarkObject = locationValues[0];
+            lastKnownGPSLocation = locationGPS;
+            var gpsPlacemarkObject = locationGPS;
 
             // When we are using smart update
             var smartUpdate = (preSmartupdate && (placemarkObjects.length - 1) == httpValues[1].length);
