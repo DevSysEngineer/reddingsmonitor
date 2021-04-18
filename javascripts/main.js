@@ -715,7 +715,7 @@ function updateLayout(selectElement, listElement, minutesDiff, smartUpdate) {
                 var childNodes = listElement.childNodes;
                 for (var i = 0; i < childNodes.length; i++) {
                     var placemarkObject = placemarkObjects[i];
-                    updateSidebarElement(i, placemarkObject, childNodes.length[i]); 
+                    updateSidebarElement(i, placemarkObject, childNodes[i]); 
                 }
                 resolve();
             }));
@@ -840,7 +840,7 @@ function loadRemoteData() {
                             (lastKnownGPSLocation.centerCoordinate.lng != position.coords.longitude || lastKnownGPSLocation.centerCoordinate.lat != position.coords.latitude))) {
 
                             // Create placemark
-                            parentResolve([{
+                            parentResolve({
                                 id: 'gps',
                                 name: activeLanguage.textObject.myLocation,
                                 description: '',
@@ -850,19 +850,19 @@ function loadRemoteData() {
                                     lat: position.coords.latitude,
                                     alt: 0
                                 }
-                            }, false]);
+                            });
                         } else {
-                            parentResolve([lastKnownGPSLocation, true]);
+                            parentResolve(lastKnownGPSLocation);
                         }
                     }).catch((err) => {
-                        parentResolve([null, false]);
+                        parentResolve(null);
                     });
                 } else {
-                    parentResolve([null, false]);
+                    parentResolve(null);
                 }
             } else {
                 // Create placemark
-                parentResolve([{
+                parentResolve({
                     id: 'gps',
                     name: activeLanguage.textObject.myLocation,
                     type: 'unknown',
@@ -873,16 +873,21 @@ function loadRemoteData() {
                         lat: gpsLocation.lat,
                         alt: 0
                     }
-                }, true]);
+                });
             }
         }).then(locationValues => {
+            // Check if GPS object is changed
+            var preSmartupdate = true;
+            if (lacemarkObjects.length <= 0 && lastKnownGPSLocation !== null && locationValues[0] === null) {
+                preSmartupdate  = false;
+            }
+
             // Set values
             lastKnownGPSLocation = locationValues[0];
             var gpsPlacemarkObject = locationValues[0];
-            var gpsSame = locationValues[1];
 
             // When we are using smart update
-            var smartUpdate = (placemarkObjects.length > 0 && gpsSame);
+            var smartUpdate = (preSmartupdate && (placemarkObjects.length - 1) == httpValues[1].length);
             if (smartUpdate) {
                 var newPlacemarkObjects = httpValues[1];
                 var differentIndex = 0;
