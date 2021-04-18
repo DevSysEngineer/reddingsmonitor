@@ -71,6 +71,11 @@ try {
                     $object->payload[] = $placemarkObj->toStdClass();
                 }
             }
+
+            /* Sort placemaks */
+            usort($object->payload, function($a, $b) {
+                return strcmp($a->id, $b->id);
+            });
         }
     }
 
