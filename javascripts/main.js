@@ -878,7 +878,7 @@ function loadRemoteData() {
         }).then(locationValues => {
             // Check if GPS object is changed
             var preSmartupdate = true;
-            if (lacemarkObjects.length <= 0 && lastKnownGPSLocation !== null && locationValues[0] === null) {
+            if (placemarkObjects.length <= 0 && lastKnownGPSLocation !== null && locationValues[0] === null) {
                 preSmartupdate  = false;
             }
 
