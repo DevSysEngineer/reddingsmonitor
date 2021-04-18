@@ -887,7 +887,7 @@ function loadRemoteData() {
                 var newPlacemarkObjects = httpValues[1];
                 var differentIndex = 0;
                 for (var i = 1; i < placemarkObjects.length; i++) { // Skip GPS, because it's doesn't exists in HTTP result
-                    if (!newPlacemarkObjects[i] || (newPlacemarkObjects[i] && newPlacemarkObjects[i].id !== placemarkObjects[i].id)) {
+                    if (!newPlacemarkObjects[differentIndex] || (newPlacemarkObjects[differentIndex] && newPlacemarkObjects[differentIndex].id !== placemarkObjects[i].id)) {
                         smartUpdate = false;
                         break;
                     }
